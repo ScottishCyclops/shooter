@@ -2,12 +2,11 @@ class Actor extends Entity
 {
     constructor(x, y)
     {
-        super(x, y)
-        this.velocity = createVector(0, 0);
+        super(x, y, meter, meter)
+        this.velocity = new Vector();
         this.speed = 0;
         this.maxHealth = 100;
         this.health = this.maxHealth;
-        this.size = 20;
     }
 
     update()
@@ -15,13 +14,6 @@ class Actor extends Entity
         this.velocity.normalize();
         this.position.add(this.velocity.mult(this.speed));
         this.velocity = createVector(0, 0);
-    }
-
-    draw()
-    {
-        noStroke();
-        fill(0);
-        ellipse(this.position.x, this.position.y, this.size);
     }
 
     isDead()

@@ -30,6 +30,7 @@ let wave;
 function setup()
 {
     canvas = new Canvas(window.innerWidth, window.innerHeight);
+    /*
 
     player = new Player();
     kb = new Input();
@@ -40,11 +41,13 @@ function setup()
 
     delta = 0;
     lastTime = 0;
+    */
 }
 
 
 function draw()
 {
+    /*
     background(240);
 
     spawnPickable();
@@ -107,9 +110,10 @@ function draw()
         // clear zombies
         zombies = null;
     }
+    */
 }
 
-
+/*
 function keyPressed()
 {
     kb.updateKeys(keyCode, true);
@@ -132,3 +136,4 @@ function mouseReleased()
 {
    kb.updateButtons(mouseButton, false);
 }
+*/

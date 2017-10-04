@@ -8,6 +8,7 @@ const meter = 40;
 
 let loopHandle = undefined;
 let loopFunction = undefined;
+let looping = false;
 const startTime = Date.now();
 
 const directionKeys =
@@ -49,10 +50,11 @@ window.onload = () =>
 
         entities.forEach(entity =>
         {
-            entity.updateComponents(delta);
+            entity.update(delta);
         });
     };
     loopHandle = setInterval(loopFunction, interval);
+    looping = true;
 
     //Events
 
@@ -210,9 +212,18 @@ window.onload = () =>
 function setFrameRate(frameRate)
 {
     interval = 1000 / frameRate;
+    if(looping)
+    {
+        clearInterval(loopHandle);
+        loopHandle = setInterval(loopFunction, interval);
+    }
+}
 
+function noLoop()
+{
+    looping = false;
     clearInterval(loopHandle);
-    loopHandle = setInterval(loopFunction, interval);
+    loopHandle = undefined;
 }
 
 function addInputEvent(key, release, once, callback)

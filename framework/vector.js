@@ -125,23 +125,28 @@ class Vector
     {
         return new Vector(this.x, this.y - value instanceof Vector ? value.y : value);
     }
-
+    
     /**
-     * Subtracts another vector from this one
+     * Subtracts another vector from this one or a scalar or an `x, y`
      *
      * @param {any} value the other vector or scalar
+     * @param {number} y the y componant of the vector if given as `x, y`
      * @return {Vector} new vector
      * @public
      */
-    subtract(value)
+    subtract(value, y)
     {
         if(value instanceof Vector)
         {
             return new Vector(this.x - value.x, this.y - value.y);
         }
-        else
+        else if(y === undefined)
         {
             return new Vector(this.x - value, this.y - value);
+        }
+        else
+        {
+            return new Vector(this.x - value, this.y - y);
         }
     }
 
@@ -170,21 +175,26 @@ class Vector
     }
 
     /**
-     * Divides both vector axis by a axis values of given vector or scalar
+     * Divied another vector by this one or a scalar or an `x, y`
      *
      * @param {any} value the other vector or scalar
+     * @param {number} y the y componant of the vector if given as `x, y`
      * @return {Vector} new vector
      * @public
      */
-    divide(value)
+    divide(value, y)
     {
         if(value instanceof Vector)
         {
             return new Vector(this.x / value.x, this.y / value.y);
         }
-        else
+        else if(y === undefined)
         {
             return new Vector(this.x / value, this.y / value);
+        }
+        else
+        {
+            return new Vector(this.x / value, this.y / y);
         }
     }
 
@@ -213,21 +223,26 @@ class Vector
     }
 
     /**
-     * Multiply both vector axis by a axis values of given vector or scalar
+     * Multiplies another vector by this one or a scalar or an `x, y`
      *
      * @param {any} value the other vector or scalar
+     * @param {number} y the y componant of the vector if given as `x, y`
      * @return {Vector} new vector
      * @public
      */
-    multiply(value)
+    multiply(value, y)
     {
         if(value instanceof Vector)
         {
             return new Vector(this.x * value.x, this.y * value.y);
         }
-        else
+        else if(y === undefined)
         {
             return new Vector(this.x * value, this.y * value);
+        }
+        else
+        {
+            return new Vector(this.x * value, this.y * y);
         }
     }
 

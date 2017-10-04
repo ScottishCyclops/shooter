@@ -209,7 +209,7 @@ class Entity
         component.init(this);
     }
 
-    updateComponents(deltaTime)
+    update(deltaTime)
     {
         this._components.forEach(component =>
         {
@@ -257,27 +257,23 @@ class Entity
         this._updateTransform();
     }
 
-    scaleTo(vec)
+    scaleTo(vec, y)
     {
-        this._scale = vec;
+        if(y === undefined)
+        {
+            this._scale = vec;
+        }
+        else
+        {
+            this._scale = new Vector(vec, y);
+        }
+
         this._updateTransform();
     }
 
-    scaleTo(x, y)
+    scaleBy(vec, y)
     {
-        this._scale = new Vector(x, y);
-        this._updateTransform();
-    }
-
-    scaleBy(vec)
-    {
-        this._scale = this._scale.multiply(vec);
-        this._updateTransform();
-    }
-
-    scaleBy(x, y)
-    { 
-        this._scale = this._scale.multiplyX(x).multiplyY(y);
+        this._scale = this._scale.multiply(vec, y);
         this._updateTransform();
     }
 
@@ -329,5 +325,16 @@ class Entity
     {
         this._hidden = false;
         this._html.style.display = "block";
+    }
+
+    /**
+     * Get the distance with another entity
+     * 
+     * @param {Entity} entity the other entity
+     * @public
+     */
+    distanceFrom(entity)
+    {
+        return this._location.distance(entity._location);
     }
 }
