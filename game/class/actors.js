@@ -2,11 +2,11 @@ class Player extends Actor
 {
     constructor()
     {
-        super(width / 2, height / 2);
-        this.rotation = 0;
-        this.forward = createVector(0,  -1);
-        this.speed = 5;
-
+        super(width / 2, height / 2, meter);
+        this.forward = new Vector(0,  -1);
+        this.speed = 10 * meter;
+        this.backwardsSpeedRatio = 0.7;
+        
         this.weapons =
         {
             1: new TacticalPistol(0),
@@ -14,7 +14,7 @@ class Player extends Actor
             3: new MachineGun(100)
         };
 
-        this.knife = new Knife();
+        //this.knife = new Knife();
         this.activeWeapon = this.weapons[3];
         this.kills = 0;
         
@@ -22,58 +22,92 @@ class Player extends Actor
 
     update(delta)
     {
-        this.velocity.normalize();
+        this.forward = this._location.subtract(mousePos).normalize().invert();
 
-        //speed is relative to the angle between the forward vector and the velocity
-        let angle = this.forward.copy().dot(this.velocity);
-        this.speed = sqrt(angle + 1) + 2;
+        let speed = this.speed * (delta / 1000);
 
-        let aim = createVector(mouseX, mouseY);
-        this.forward = this.position.copy().sub(aim).normalize().mult(-1);
-
-        let dotVec;
-        this.forward.x > 0 ? dotVec = UP_VECTOR : dotVec = DOWN_VECTOR;
-        this.rotation = acos(this.forward.copy().dot(dotVec));
-
-        super.update();
-
-        // correct out of bound
-
-        if(this.position.x < 0)
+        let dotVec = DOWN_VECTOR;
+        if(this.forward.x > 0)
         {
-            this.position.x = 0;
+            dotVec = UP_VECTOR;
+        }
+        this.rotateTo(Math.acos(this.forward.dot(dotVec)));
+
+        if(currentDirections.HORIZONTAL !== "NONE")
+        {
+            let axisSpeed = 0;
+            if(currentDirections.HORIZONTAL === "LEFT")
+            {
+                //speed is relative to the angle between the forward vector and the motion vector
+                axisSpeed = lerp(speed * this.backwardsSpeedRatio, speed, this.forward.dot(LEFT_VECTOR)) * -1;
+
+            }
+            else
+            {
+                axisSpeed = lerp(speed * this.backwardsSpeedRatio, speed, this.forward.dot(RIGHT_VECTOR));
+            }
+
+            this.moveBy(axisSpeed, 0);
         }
 
-        if(this.position.x > width - 1)
+        if(currentDirections.VERTICAL !== "NONE")
         {
-            this.position.x = width - 1;
+            let axisSpeed = 0;
+            if(currentDirections.VERTICAL === "UP")
+            {
+                // re range from 0-1 to 0.5 1
+                axisSpeed = lerp(speed * this.backwardsSpeedRatio, speed, this.forward.dot(UP_VECTOR)) * -1;
+
+            }
+            else
+            {
+                axisSpeed = lerp(speed * this.backwardsSpeedRatio, speed, this.forward.dot(DOWN_VECTOR));
+            }
+
+            this.moveBy(0, axisSpeed);
         }
 
-        if(this.position.y < 0)
+        super.update(delta);
+
+        // TODO: correct out of bound
+
+        if(this._location.x < 0)
         {
-            this.position.y = 0;
+            this.moveTo(0, this._location.y);
         }
 
-        if(this.position.y > height - 1)
+        if(this._location.x > width - 1)
         {
-            this.position.y = height - 1;
+            this.moveTo(width - 1, this._location.y);
         }
 
+        if(this._location.y < 0)
+        {
+            this.moveTo(this._location.x, 0);
+        }
+
+        if(this._location.y > height - 1)
+        {
+            this.moveTo(this._location.x, height - 1);
+        }
+
+        /*
         for(let i = 1; i <= 3; i++)
         {
-            this.weapons[i].update(delta, this.position);
+            this.weapons[i].update(delta, this._location);
         }
-
-        this.knife.update(delta, this.position);
+        
+        this.knife.update(delta, this._location);
+        */
 
         for(let i = pickables.length - 1; i >= 0; i--)
         {
-            if(this.distanceFrom(pickables[i]) <= this.size)
+            if(collideEntities(pickables[i], this))
             {
                 switch(pickables[i].type)
                 {
-                    case "HEALTH": this.health = min(this.health + pickables[i].value, this.maxHealth); break;
-                    case "AMMO":   this.activeWeapon.addAmmunition(pickables[i].value);                       break;
+                    case "HEALTH": this.health = min(this.health + pickables[i].value, this._maxHealth); break;
+                    case "AMMO":   this.activeWeapon.addAmmunition(pickables[i].value);                  break;
                 }
 
                 pickables.splice(i, 1);
@@ -83,6 +117,7 @@ class Player extends Actor
 
     draw()
     {
+        /*
         push();
 
         fill(0);
@@ -108,6 +143,7 @@ class Player extends Actor
                 bullet.draw();
             });
         }
+        */
     }
 
     switchToWeapon(number)
@@ -116,30 +152,6 @@ class Player extends Actor
         {
             this.activeWeapon = this.weapons[number];
         }
-    }
-
-    /*
-    MOUVEMENT
-    */
-
-    moveUp()
-    {
-        this.velocity.add(UP_VECTOR);
-    }
-
-    moveLeft()
-    {
-        this.velocity.add(LEFT_VECTOR);
-    }
-
-    moveRight()
-    {
-        this.velocity.add(RIGHT_VECTOR);
-    }
-    
-    moveDown()
-    {
-        this.velocity.add(DOWN_VECTOR);
     }
 
     /*
@@ -168,6 +180,7 @@ class Player extends Actor
 
     tryShooting()
     {
+        // prevent firering while swinging the knife
         if(this.knife.canSwing())
         {
             this.activeWeapon.fire(this.forward);
@@ -175,18 +188,17 @@ class Player extends Actor
     }
 }
 
-
 class Zombie extends Actor
 {
     constructor(x, y)
     {
-        super(x, y);
+        super(x, y, 30);
 
         this.speed = 2;
-        this.maxHealth = int(random(2, 10));
+        this.maxHealth = randInt(2, 10);
         this.health = this.maxHealth;
-        this.target = player.position.copy();
-        this.damage = random(0.1, 1.1);
+        this.target = player.getLocation();
+        this.damage = randFloat(0.1, 1.1);
         this.buffed = false;
 
         this.deadColor = "#2c3e50";
@@ -196,40 +208,39 @@ class Zombie extends Actor
 
     updateTarget()
     {
-        if(random() < 15 / 100)
+        if(chance(15))
         {
-            let newTarget;
+            let newTarget = null;
 
-            if(player.distanceFrom(this) <= this.size * 1.3)
+            if(player.distanceFrom(this) <= this._dim.x * 1.3)
             {
                 // if very close, go to player directly
-                newTarget = player.position.copy();
+                newTarget = player.getLocation();
             }
             else
             {
-
-                if(random() < 15 / 100)
+                if(chance(15))
                 {
                     // go behind player
-                    newTarget = player.position.copy().sub(player.forward.copy().mult(20));
+                    newTarget = player.getLocation().subtract(player.forward.multiply(20));
                 }
-                else if(random() < 10 / 100)
+                else if(chance(10))
                 {
                     // go to the side of player, 50% chance for each side
-                    newTarget = player.position.copy().add(player.forward.copy().rotate(HALF_PI).mult(random() < 0.5 ? 20 : -20));
+                    newTarget = player.getLocation().add(player.forward.rotate(HALF_PI).multiply(chance(50) ? 20 : -20));
                 }
-                else if(random() < 2 / 100)
+                else if(chance(2))
                 {
                     // go to random
-                    newTarget = createVector(random(width), random(height));
+                    newTarget = new Vector(randFloat(width), randFloat(height));
                 }
                 else
                 {
-                    // go to close to player
-                    newTarget = player.position.copy();
+                    // go close to player
+                    newTarget = player.getLocation().clone();
 
-                    newTarget.x += random(-this.size * 5, this.size * 5);
-                    newTarget.y += random(-this.size * 5, this.size * 5);
+                    newTarget.x += randFloat(-this._dim.x * 5, this._dim.x * 5);
+                    newTarget.y += randFloat(-this._dim.x * 5, this._dim.x * 5);
                 }
             }
 
@@ -239,9 +250,9 @@ class Zombie extends Actor
 
     updateSpeed()
     {
-        if(random() < 33 / 100)
+        if(chance(33))
         {
-            this.speed = max(min(this.speed + random(-2, 4), 4), 0.5);
+            this.speed = clamp(this.speed + randFloat(-2, 4), 0.5, 4);
         }
     }
 
@@ -251,15 +262,15 @@ class Zombie extends Actor
         this.speed *= -1;
     }
 
-    update()
+    update(delta)
     {
         this.updateTarget();
 
-        this.velocity = this.getSteeringTo(this.target);
+        this._velocity = this.getSteeringVelocity(this.target);
 
-        super.update();
+        super.update(delta);
 
-        if(this.distanceFrom(player) < player.size)
+        if(collideEntities(player, this))
         {
             player.health -= this.damage;
         }
@@ -268,7 +279,7 @@ class Zombie extends Actor
             // pickables pickup
             for(let i = pickables.length - 1; i >= 0; i--)
             {
-                if(this.distanceFrom(pickables[i]) <= this.size)
+                if(collideEntities(pickables[i], this))
                 {
                     switch(pickables[i].type)
                     {
@@ -282,10 +293,14 @@ class Zombie extends Actor
         }
 
         this.updateSpeed();
+
+        // TODO: update color
+        this.fill(this.defaultColor);
     }
 
     draw()
     {
+        /*
         push();
         // more black as the health goes down
 
@@ -299,13 +314,13 @@ class Zombie extends Actor
         ellipse(this.position.x, this.position.y, this.size);
 
         pop();
-
+        */
     }
 
-    getSteeringTo(target)
+    getSteeringVelocity(target)
     {
-        let desiredVelocity = target.copy().sub(this.position).normalize()
+        const desiredVelocity = target.subtract(this._location).normalize();
 
-        return desiredVelocity.sub(this.velocity);
+        return desiredVelocity.subtract(this._velocity);
     }
 }

@@ -2,12 +2,15 @@ class Item extends Entity
 {
     constructor(name = "unnamed", x = 0, y = 0)
     {
-        super(x, y);
+        super(x, y, meter / 2, meter / 2);
         this.name = name;
+
+        this.fill("white");
     }
 
     draw()
     {
+        /*
         push();
 
         noStroke();
@@ -16,12 +19,13 @@ class Item extends Entity
         ellipse(this.position.x, this.position.y, 7);
 
         pop();
+        */
     }
 }
 
 class Bullet extends Item
 {
-    constructor(position, direction, speed, windResistance = 0.5)
+    constructor(location, direction, speed, windResistance = 0.5)
     {
         super("Bullet");
 

@@ -11,6 +11,9 @@ let loopFunction = undefined;
 let looping = false;
 const startTime = Date.now();
 
+let mouseX = 0, mouseY = 0;
+let mousePos = new Vector(0, 0);
+
 const directionKeys =
 {
     LEFT:  "a",
@@ -24,10 +27,19 @@ const currentDirections =
     HORIZONTAL: "NONE",
     VERTICAL: "NONE",
 };
+
 const UP_VECTOR = new Vector(0, -1);
 const DOWN_VECTOR = new Vector(0, 1);
 const LEFT_VECTOR = new Vector(-1, 0);
 const RIGHT_VECTOR = new Vector(1, 0);
+const PI = Math.PI;
+const HALF_PI = PI / 2;
+
+const collideMethods =
+{
+    BOX: 0,
+    CIRCLE: 1
+};
 
 const inputEvents = {};
 
@@ -200,6 +212,19 @@ window.onload = () =>
         }
     };
 
+    document.onmousemove = e =>
+    {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        mousePos = new Vector(mouseX, mouseY);
+
+        if(typeof mouseMoveEvent === "function")
+        {
+            return mouseMoveEvent(e);
+        }
+    }
+
     //user setup
     if(typeof setup === "function")
     {
@@ -276,4 +301,49 @@ function unregisterEntity(entity)
     {
         entities.splice(i, 1);
     }
+}
+
+function randFloat(min, max)
+{
+    if(max === undefined)
+    {
+        //assume max was given if only one param
+        return Math.random() * min;
+    }
+    else
+    {
+        return Math.random() * (max - min) + min;
+    }
+}
+
+function randInt(min, max)
+{
+    return Math.floor(randFloat(min, max));
+}
+
+function map(value, inMin, inMax, outMin, outMax)
+{
+    return outMin + (outMax - outMin) * (value - inMin) / (inMax - inMin);
+}
+
+function clamp(value, min, max)
+{
+    return Math.min(Math.max(value, min), max);
+}
+
+/**
+ * Returns true `pourcent`% of the time
+ * 
+ * @param {number} pourcent 
+ */
+function chance(pourcent)
+{
+    pourcent = clamp(pourcent, 0, 100);
+
+    return Math.random() < pourcent / 100;
+}
+
+function lerp(x, y, alpha)
+{
+    return (1 - alpha) * x + alpha * y;
 }

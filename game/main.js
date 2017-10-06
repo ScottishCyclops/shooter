@@ -21,31 +21,26 @@ let player, kb, ui;
 
 let pickables = [];
 let zombies = [];
-
-let delta;
-let lastTime;
 let wave;
 
 
 function setup()
 {
     canvas = new Canvas(window.innerWidth, window.innerHeight);
-    /*
+    canvas.fill("#ccc");
 
     player = new Player();
-    kb = new Input();
-    ui = new Ui(uiHeight);
+    player.fill("#333");
+    canvas.appendChild(player);
+    //kb = new Input();
+    //ui = new Ui(uiHeight);
 
     wave = 1;
     spawnWave(wave);
-
-    delta = 0;
-    lastTime = 0;
-    */
 }
 
 
-function draw()
+function loop()
 {
     /*
     background(240);

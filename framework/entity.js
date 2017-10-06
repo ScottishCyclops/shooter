@@ -166,6 +166,8 @@ class Entity
 
     //  Getters
 
+    getWorldSpaceLocation(){ return this._location.add(this._worldLocation); }
+
     getLocation(){ return this._location; }
 
     getWorldLocation(){ return this._worldLocation; }

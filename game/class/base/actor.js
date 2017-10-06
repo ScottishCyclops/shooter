@@ -1,23 +1,24 @@
 class Actor extends Entity
 {
-    constructor(x, y)
+    constructor(x, y, r)
     {
-        super(x, y, meter, meter)
-        this.velocity = new Vector();
+        super(x, y, r, r);
+        /**
+         * Speed in meters/seconds
+         * @public
+         */
         this.speed = 0;
-        this.maxHealth = 100;
-        this.health = this.maxHealth;
+        this._maxHealth = 100;
+        this.health = this._maxHealth;
     }
 
-    update()
+    update(delta)
     {
-        this.velocity.normalize();
-        this.position.add(this.velocity.mult(this.speed));
-        this.velocity = createVector(0, 0);
+        return;
     }
 
     isDead()
     {
-        return int(this.health) <= 0;
+        return Math.floor(this.health) <= 0;
     }
 }
