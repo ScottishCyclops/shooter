@@ -1,15 +1,10 @@
 class Player extends Entity
 {
-    constructor(speed = 5)
+    constructor(locX, locY)
     {
-        super(width / 2, height / 2, meter, meter);
-
-        this.rotation = 0;
-        this.forward = createVector(0,  -1);
-
-        this.addComponent(new ZeroGPawnComponent(speed));
-        this.addComponent(new PhysicsComponent(0.1, new Vector));
-
+        super(locX, locY, { width: 6, height: 6, controlled: true });
+        
+        /*
         this.weapons =
         {
             1: new TacticalPistol(0),
@@ -19,17 +14,16 @@ class Player extends Entity
 
         this.knife = new Knife();
         this.activeWeapon = this.weapons[3];
+        */
         this.kills = 0;
     }
-    
-    getSpeed(){ return this._components[0].getSpeed(); }
 
-    setSpeed(speed){ this._components[0].setSpeed(speed); }
+    // addForce(force){ this._components[1].addForce(force); }
 
-    addForce(force){ this._components[1].addForce(force); }
-
-    update(delta)
+    update(deltaTime)
     {
+        /*
+
         this.velocity.normalize();
 
         //speed is relative to the angle between the forward vector and the velocity
@@ -42,30 +36,32 @@ class Player extends Entity
         let dotVec;
         this.forward.x > 0 ? dotVec = UP_VECTOR : dotVec = DOWN_VECTOR;
         this.rotation = acos(this.forward.copy().dot(dotVec));
+        */
 
-        super.update();
+        super.update(deltaTime);
 
         // correct out of bound
 
-        if(this.position.x < 0)
+        if(this.location.x < 0)
         {
-            this.position.x = 0;
+            this.moveTo(0, this.location.y)
         }
 
-        if(this.position.x > width - 1)
+        if(this.location.x > width - 1)
         {
-            this.position.x = width - 1;
+            this.moveTo(width - 1, this.location.y);
         }
 
-        if(this.position.y < 0)
+        if(this.location.y < 0)
         {
-            this.position.y = 0;
+            this.moveTo(this.location.x, 0);
         }
 
-        if(this.position.y > height - 1)
+        if(this.location.y > height - 1)
         {
-            this.position.y = height - 1;
+            this.moveTo(this.location.x, height - 1);
         }
+        /*
 
         for(let i = 1; i <= 3; i++)
         {
@@ -87,35 +83,7 @@ class Player extends Entity
                 pickables.splice(i, 1);
             }
         }
-    }
-
-    draw()
-    {
-        push();
-
-        fill(0);
-        noStroke();
-
-        translate(this.position.x, this.position.y);
-        rotate(this.rotation);
-        translate(-this.size / 2, -this.size / 2);
-
-        rect(0, 0, this.size, this.size);
-
-        pop();
-
-        this.activeWeapon.draw();
-        this.knife.draw();
-
-        //drawing all bullets, even from not the ative weapon
-        
-        for(let i = 1; i <= 3; i++)
-        {
-            this.weapons[i].bullets.forEach(function(bullet)
-            {
-                bullet.draw();
-            });
-        }
+        */
     }
 
     switchToWeapon(number)

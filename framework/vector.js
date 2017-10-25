@@ -52,6 +52,18 @@ class Vector
         return new Vector(obj.x || 0, obj.y || 0);
     }
 
+    /**
+     * Utility method returning vec if it is a vector
+     * or otherwise a new vector from vec as x, and y
+     * 
+     * @param {number} vec a vector or the x component of a vector
+     * @param {number} y the y component of a vector or nothing
+     */
+    fromVecY(vec, y)
+    {
+        return vec instanceof Vector ? vec : new Vector(vec, y || 0);
+    }
+
     //Manipulation
 
     /**

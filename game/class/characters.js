@@ -1,9 +1,8 @@
-class Player extends Actor
+class Player extends Character
 {
     constructor()
     {
-        super(width / 2, height / 2, meter);
-        this.forward = new Vector(0,  -1);
+        super(width / 2, height / 2, { radius: meter, speed: kmhToMms(5) });
         this.speed = 10 * meter;
         this.backwardsSpeedRatio = 0.7;
         
@@ -71,25 +70,6 @@ class Player extends Actor
 
         // TODO: correct out of bound
 
-        if(this._location.x < 0)
-        {
-            this.moveTo(0, this._location.y);
-        }
-
-        if(this._location.x > width - 1)
-        {
-            this.moveTo(width - 1, this._location.y);
-        }
-
-        if(this._location.y < 0)
-        {
-            this.moveTo(this._location.x, 0);
-        }
-
-        if(this._location.y > height - 1)
-        {
-            this.moveTo(this._location.x, height - 1);
-        }
 
         /*
         for(let i = 1; i <= 3; i++)

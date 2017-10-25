@@ -23,6 +23,7 @@ class Component
          * @public
          */
         this.name = name;
+        
         /**
          * Update method
          * 

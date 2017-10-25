@@ -2,284 +2,288 @@
 
 const DEFAULT_SIZE = 32;
 
+const origin =
+{
+    TOPLEFT: 0,
+    CENTER: 1,
+
+};
+
 class Entity
 {
     /**
      * Entity - Base class for anything that is physically present in the game world
      * 
-     * @param {number} x the x position in the world of the entity
-     * @param {number} y the y position in the world of the entity
-     * @param {number} w the width of the entity
-     * @param {number} h the height of the entity
+     * @param {number} locX the x position in the world of the entity
+     * @param {number} locY the y position in the world of the entity
+     * @param {any} extras any extra parameters
      * @public
      */
-    constructor(x, y, w, h)
+    constructor(locX, locY, extras)
     {
+        extras = extras || {};
+
         /**
-         * The location of the entity in local space
-         * 
-         * @private
+         * @property {Vector} location location of the entity in local space
+         * @readonly
          */
-        this._location = new Vector(x, y);
+        this.location = new Vector(locX || 0, locY || 0);
+        
         /**
-         * The location of the entity in world space
-         * 
-         * @private
+         * @property {number} rotation rotation of the entity in radians
+         * @readonly
          */
-        this._worldLocation = new Vector(0, 0);
+        this.rotation = extras.rotation || 0;
+        
         /**
-         * The rotation of the entity in radians
-         * 
-         * @private
+         * @property {Vector} scale scale of the entity
+         * @readonly
          */
-        this._rotation = 0;
+        this.scale = new Vector(extras.scaleX || 1, extras.scaleY || 1);
+        
         /**
-         * The scale of the entity
-         * 
-         * @private
+         * @property {Vector} forward the forward vector of the entity (facing up at first)
+         * @readonly
          */
-        this._scale = new Vector(1, 1);
+        this.forward = UP_VECTOR;
+        
         /**
-         * Dimensions: width and height
-         * 
-         * @private
+         * @property {number} width width of the entity
+         * @readonly
          */
-        this._dim = new Vector(w, h);
+        this.width = extras.width || DEFAULT_SIZE;
+        
         /**
-         * Visibility flag
-         * 
-         * @private
+         * @property {number} height height of the entity
+         * @readonly
          */
-        this._hidden = false;
+        this.height = extras.height || DEFAULT_SIZE;
+        
         /**
-         * Should the entity use collisions
-         * 
-         * @private
+         * @property {boolean} hidden visibility flag
+         * @readonly
          */
-        this._collide = false;
+        this.hidden = extras.hidden || false;
+        
         /**
-         * HTML element
-         * 
-         * @private
+         * @property {boolean} useCollisions collision participation flag
+         * @readonly
          */
-        this._html = document.createElement("div");
+        this.useCollisions = extras.useCollisions || false;
+        
         /**
-         * Array of entity children
-         * 
-         * @private
+         * @property {number} depth layer of the entity
+         * @readonly
+         */
+        this.depth = extras.depth || 0;
+        
+        /**
+         * @property {any} color color of the entity in a valid CSS representation
+         * @readonly
+         */
+        this.color = extras.color || 0;
+        
+        /**
+         * @property {Entity[]} _children this entity's children
+         * @protected
          */
         this._children = [];
-        /**
-         * Depth of the entity. it's CSS Z-index
-         * 
-         * @private
-         */
-        this._depth = 0;
-        /**
-         * Components list
-         * 
-         * @private
-         */
-        this._components = [];
 
-        //html element basic styling
+        /**
+         * @property {any} _components the indexed list of components of this entity
+         * @protected
+         */
+        this._components = {};
+
+        this._offset = new Vector;
+        
+        /**
+         * @property {any} _html html div element
+         * @protected
+         */
+        this._html = document.createElement("div");
+        
+        // html element basic styling
         this._html.style.position = "absolute";
-        this._html.style.top =  0 + PX;
-        this._html.style.left = 0 + PX;
-        this._html.style.width =  (w || DEFAULT_SIZE) + PX;
-        this._html.style.height = (h || DEFAULT_SIZE) + PX;
+        this._html.style.top = 0;
+        this._html.style.left = 0;
         
         this._updateTransform();
-
-        //auto registering
+        this._updateWidth();
+        this._updateHeight();
+        this._updateHidden();
+        this._updateDepth();
+        this._updateColor();
+        this.setOrigin(extras.origin || origin.TOPLEFT);
+        
+        // auto registering
         registerEntity(this);
     }
-
-    //Private methods
-
-    /**
-     * Private method updating the CSS transform
-     * 
-     * @private
-     */
-    _updateTransform()
-    {
-        this._html.style.transform = "translate" + this._location.add(this._worldLocation).toCssString(PX) + " scale" + this._scale.toCssString() + " rotate(" + this._rotation + "rad)";
-    }
-
-    /**
-     * update one child's world location
-     * @param {Entity} child the child to update
-     */
-    _updateChildLocation(child)
-    {
-        child._setWorldLocation(this._worldLocation.add(this._location));
-        child._updateChildrenLocation();
-    }
-
-    //Protected methods
-
-    /**
-     * Update all children's world location recursively
-     * 
-     * @protected
-     */
-    _updateChildrenLocation()
-    {
-        this._children.forEach(child =>
-        {
-            this._updateChildLocation(child);
-        });
-    }
-
-    /**
-     * Setter for the world location
-     * 
-     * @param {Vector} worldLocation the new world location
-     * @protected
-     */
-    _setWorldLocation(worldLocation){ this._worldLocation = worldLocation; }
-
-    //Public methods
-
-    //  Events
-
-    onLeftClick(callback)
-    {
-        this._html.onclick = callback;
-    }
-
-    onRightClick(callback)
-    {
-        this._html.oncontextmenu = callback;
-    }
-
-    onKeyUp(callback)
-    {
-        this._html.onkeyup = callback;
-    }
-
-    onKeyDown(callback)
-    {
-        this._html.onkeydown = callback;
-    }
-
-    //  Getters
-
-    getWorldSpaceLocation(){ return this._location.add(this._worldLocation); }
-
-    getLocation(){ return this._location; }
-
-    getWorldLocation(){ return this._worldLocation; }
-
-    getRotation(){ return this._rotation; }
-
-    getScale(){ return this._scale; }
-
-    getDimensions(){ return this._dim; }
-
-    isHidden(){ return this._hidden; }
-
-    getCollide(){ return this._collide; }
-
-    getHtmlElement(){ return this._html; }
-
-    getDepth(){ return this._depth; }
-
-    //  Setters
-
-    setDepth(depth)
-    {
-        this._depth = depth;
-        this._html.style.zIndex = this._depth;
-    }
-
-    setCollide(collide){ this._collide = collide; }
-
-    //  Style
     
-    fill(color)
-    {
-        this._html.style.background = color;
-    }
-
-    //  Components
-
-    addComponent(component)
-    {
-        this._components.push(component);
-        component.init(this);
-    }
-
-    update(deltaTime)
-    {
-        this._components.forEach(component =>
-        {
-            component.update(this, deltaTime);
-        });
-    }
-    /*
-    removeComponent(component)
-    {
-        this._components.splice(this._components.indexOf())
-    }
-    */
+    // Transform methods
     
-    //  Transform methods
-
     moveTo(vec, y)
     {
-        if(y === undefined)
-        {
-            this._location = vec;
-        }
-        else
-        {
-            this._location = new Vector(vec, y);
-        }
-
+        // if(y === undefined)
+        const newLocaction = Vector.prototype.fromVecY(vec, y);
+        
+        // get how much we need to move all the children
+        const diff = this.location.subtract(newLocaction);
+        this.location = newLocaction;
+        
         this._updateTransform();
+        
+        this._updateChildrenLocation(diff);
+        
+        // chainable
+        return this;
     }
-
+    
     moveBy(vec, y)
     {
-        this._location = this._location.add(vec, y);
+        this.location = this.location.add(vec, y);
         this._updateTransform();
+        
+        const diff = Vector.prototype.fromVecY(vec, y);
+        this._updateChildrenLocation(diff);
+        
+        return this;
     }
     
     rotateTo(angle)
     {
-        this._rotation = angle;
+        this.rotation = angle % TWO_PI;
         this._updateTransform();
+        return this;
     }
-
+    
     rotateBy(angle)
     {
-        this._rotation += angle;
+        this.rotation = (this.rotation + angle) % TWO_PI;
         this._updateTransform();
+        return this;
     }
-
+    
     scaleTo(vec, y)
     {
-        if(y === undefined)
-        {
-            this._scale = vec;
-        }
-        else
-        {
-            this._scale = new Vector(vec, y);
-        }
-
+        this.scale = Vector.prototype.fromVecY(vec, y);
         this._updateTransform();
+        return this;
     }
-
+    
     scaleBy(vec, y)
     {
-        this._scale = this._scale.multiply(vec, y);
+        this.scale = this.scale.multiply(vec, y);
         this._updateTransform();
+        return this;
+    }
+    
+    setWidth(width)
+    {
+        this.width = width;
+        this._updateWidth();
+        return this;
+    }
+    
+    setHeight(height)
+    {
+        this.height = height;
+        this._updateHeight();
+        return this;
+    }
+    
+    setHidden(hidden)
+    {
+        this.hidden = hidden;
+        this._updateHidden();
+        return this;
+    }
+    
+    setUseCollisions(useCollisions)
+    {
+        this.useCollisions = useCollisions;
+        return this;
+    }
+    
+    setDepth(depth)
+    {
+        this.depth = depth;
+        this._updateDepth();
+        return this;
+    }
+    
+    setColor(color)
+    {
+        this.color = color;
+        this._updateColor();
+        return this;
     }
 
-    //  Utilities
+    setOrigin(mode)
+    {
+        switch(mode)
+        {
+            case origin.TOPLEFT: this._offset = new Vector;                                  break;
+            case origin.CENTER:  this._offset = new Vector(this.width / 2, this.height / 2); break;
+        }
+
+        return this;
+    }
+    
+    // Events
+    
+    onLeftClick(callback)
+    {
+        this._html.onclick = callback;
+    }
+    
+    onRightClick(callback)
+    {
+        this._html.oncontextmenu = callback;
+    }
+    
+    update(deltaTime)
+    {
+        for(const i in this._components)
+        {
+            this._components[i].update(this, deltaTime);
+        }
+    }
+    
+    // CSS update methods
+    
+    _updateTransform()
+    {
+        // auto offset to center of div when drawing
+        this._html.style.transform = `translate${this.location.subtract(this._offset).toCssString(PX)} scale${this.scale.toCssString()} rotate(${this.rotation}rad)`;
+    }
+    
+    _updateWidth()
+    {
+        this._html.style.width =  this.width + PX;
+    }
+    
+    _updateHeight()
+    {
+        this._html.style.height = this.height + PX;
+    }
+    
+    _updateHidden()
+    {
+        this._html.style.display = this.hidden ? "none" : "block";
+    }
+    
+    _updateDepth()
+    {
+        this._html.style.zIndex = this.depth;
+    }
+
+    _updateColor()
+    {
+        this._html.style.background = this.color;
+    }
+    
+    // Utilities
 
     /**
      * Add a child to this entity
@@ -290,13 +294,16 @@ class Entity
     appendChild(child)
     {
         const index = this._children.indexOf(child);
-        if(index === -1)
+        if(index !== -1)
         {
-            this._children.push(child);
-            this._html.appendChild(child.getHtmlElement());
-
-            this._updateChildLocation(child);
+            return;
         }
+
+        this._children.push(child);
+        this._html.appendChild(child._html);
+
+        // don't offset when parenting
+        this._updateChildLocation(child, new Vector(0, 0));
     }
 
     /**
@@ -308,35 +315,67 @@ class Entity
     removeChild(child)
     {
         const index = this._children.indexOf(child);
-        if(index !== -1)
+        if(index === -1)
         {
-            this._children.splice(index, 1);
-            this._html.removeChild(child.getHtmlElement());
-
-            child._setWorldLocation(new Vector(0, 0));
+            return;
         }
-    }
 
-    hide()
-    {
-        this._hidden = true;
-        this._html.style.display = "none";
+        this._children.splice(index, 1);
+        this._html.removeChild(child._html);
     }
-
-    show()
+    
+    /**
+     * update one child's world location
+     * @param {Entity} child the child to update
+     * @protected
+     */
+    _updateChildLocation(child, vec)
     {
-        this._hidden = false;
-        this._html.style.display = "block";
+        child.moveBy(vec);
+        child._updateChildrenLocation(vec);
     }
 
     /**
-     * Get the distance with another entity
-     * 
-     * @param {Entity} entity the other entity
+     * Update all children's world location recursively
+     * @param {Vector} vec distance to move all the children by
+     * @protected
+     */
+    _updateChildrenLocation(vec)
+    {
+        this._children.forEach(child =>
+        {
+            this._updateChildLocation(child, vec);
+        });
+    }
+
+    /**
+     * Add a component to this entity
+     * @param {Component} component the component to add
      * @public
      */
+    addComponent(component)
+    {
+        this._components[component.name] = component;
+        component.init(this);
+    }
+
+    /**
+     * Removes the component with the given name
+     * @param {string} name name of the component to remove
+     */
+    removeComponent(name)
+    {
+        this._components[name] = undefined;
+    }
+
+    /**
+    * Get the distance with another entity
+    * 
+    * @param {Entity} entity the other entity
+    * @public
+    */
     distanceFrom(entity)
     {
-        return this._location.distance(entity._location);
+        return this.location.distance(entity.location);
     }
 }

@@ -45,6 +45,42 @@ function randFloat(min, max)
     return Math.random() * (max - min) + min;
 }
 
+/**
+ * Converts kilometers per hour to meters per millisecond
+ * @param {number} kilometers speed in khm
+ */
+function kmhToMms(kilometers)
+{
+    return kilometers / 3600
+}
+
+/**
+ * Converts meters per second to meters per millisecond
+ * @param {number} meters speed in ms
+ */
+function msToMms(meters)
+{
+    return meters / 1000;
+}
+
+/**
+ * Converts meters per millisecond in meters per second
+ * @param {number} millimeters 
+ */
+function mmsToMs(meters)
+{
+    return meters * 1000;
+}
+
+/**
+ * Converts meters per millisecond in kilometers per hour
+ * @param {number} meters 
+ */
+function mmsToKhm(meters)
+{
+    return meters * 3600;
+}
+
 Array.prototype.includes = function(element)
 {
     return this.indexOf(element) !== -1;

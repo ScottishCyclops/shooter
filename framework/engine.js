@@ -34,6 +34,7 @@ const LEFT_VECTOR = new Vector(-1, 0);
 const RIGHT_VECTOR = new Vector(1, 0);
 const PI = Math.PI;
 const HALF_PI = PI / 2;
+const TWO_PI = PI * 2;
 
 const collideMethods =
 {
@@ -297,17 +298,19 @@ function registerEntity(entity)
 function unregisterEntity(entity)
 {
     const i = entities.indexOf(entity);
-    if(i !== -1)
+    if(i === -1)
     {
-        entities.splice(i, 1);
+        return;
     }
+    
+    entities.splice(i, 1);
 }
 
 function randFloat(min, max)
 {
     if(max === undefined)
     {
-        //assume max was given if only one param
+        // assume max was given if only one param
         return Math.random() * min;
     }
     else

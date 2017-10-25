@@ -3,33 +3,14 @@ class PawnComponent extends Component
     /**
      * PawnComponent - Create a pawn component for mouvement
      * 
-     * @param {number} speed in pixels per second
      * @public
      */
-    constructor(speed)
+    constructor()
     {
-        super("PawnComponent", updateMethod.FRAME, parent);
-
-        /**
-         * Mouvement speed, stored in pixels per ms
-         * 
-         * @private
-         */
-        this._speed = speed / 1000;
+        super("PawnComponent", updateMethod.FRAME);
     }
 
-    setSpeed(speed){ this._speed = speed / 1000; }
-
-    getSpeed(){ return this._speed * 1000; }
-
-    /**
-     * Update the pawn component
-     * 
-     * @param {Entity} entity the parent entity
-     * @param {number} deltaTime time passed since last frame
-     * @public
-     */
-    update(entity, deltaTime)
+    update(actor, deltaTime)
     {
         super.update(deltaTime);
     }
@@ -37,23 +18,63 @@ class PawnComponent extends Component
 
 class TopPawnComponent extends PawnComponent
 {
-    update(entity, deltaTime)
+    /**
+     * Update the top pawn component
+     * 
+     * @param {Actor} actor the parent actor
+     * @param {number} deltaTime time passed since last frame
+     * @public
+     */
+    update(actor, deltaTime)
     {
-        super.update(deltaTime);
+        // super.update(deltaTime);
 
-        const speed = this._speed * deltaTime;
+        const speed = actor.speed * deltaTime * meter;
 
         if(currentDirections.HORIZONTAL !== "NONE")
         {
-            entity.moveBy(currentDirections.HORIZONTAL === "LEFT" ? -speed : speed, 0);
+            actor.moveBy(currentDirections.HORIZONTAL === "LEFT" ? -speed : speed, 0);
         }
         if(currentDirections.VERTICAL !== "NONE")
         {
-            entity.moveBy(0, currentDirections.VERTICAL === "UP" ? -speed : speed);
+            actor.moveBy(0, currentDirections.VERTICAL === "UP" ? -speed : speed);
         }
     }
 }
 
+class KeepInBoundsComponent extends Component
+{
+    constructor()
+    {
+        super("KeepInBoundsComponent", updateMethod.FRAME);
+    }
+
+    update(entity, deltaTime)
+    {
+
+        if(entity.location.x < 0)
+        {
+            entity.moveTo(0, entity.location.y);
+        }
+
+        if(entity.location.x > width - 1)
+        {
+            entity.moveTo(width - 1, entity.location.y);
+        }
+
+        if(entity.location.y < 0)
+        {
+            entity.moveTo(entity.location.x, 0);
+        }
+
+        if(entity.location.y > height - 1)
+        {
+            entity.moveTo(entity.location.x, height - 1);
+        }
+    }
+}
+
+/*
 class ZeroGPawnComponent extends PawnComponent
 {
     update(entity, deltaTime)
@@ -91,7 +112,7 @@ class SidePawnComponent extends PawnComponent
         }
     }
 }
-
+*/
 
 class PhysicsComponent extends Component
 {

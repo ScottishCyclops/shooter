@@ -12,7 +12,7 @@ const pickableEvery = 2000;
 const uiHeight = 120;
 
 const width = window.innerWidth;
-const height = window.innerHeight - uiHeight;
+const height = window.innerHeight // - uiHeight;
 
 let canvas = null;
 
@@ -27,23 +27,31 @@ let wave;
 function setup()
 {
     canvas = new Canvas(window.innerWidth, window.innerHeight);
-    canvas.fill("#ccc");
+    canvas.setColor("#ccc");
 
-    player = new Player();
-    player.fill("#333");
+    player = new Actor(width / 2, height / 2,
+    {
+        controlled: true,
+        keepInBounds: true,
+        speed: kmhToMms(80),
+        origin: origin.CENTER
+    });
+
+    player.setColor("#333");
     canvas.appendChild(player);
+
     //kb = new Input();
     //ui = new Ui(uiHeight);
 
-    wave = 1;
-    spawnWave(wave);
+    //wave = 1;
+    //spawnWave(wave);
 }
 
 
 function loop()
 {
+    player.rotateBy(degreesToRadian(12));
     /*
-    background(240);
 
     spawnPickable();
 
