@@ -2,7 +2,7 @@ class PawnComponent extends Component
 {
     /**
      * PawnComponent - Create a pawn component for mouvement
-     * 
+     *
      * @public
      */
     constructor()
@@ -20,7 +20,7 @@ class TopPawnComponent extends PawnComponent
 {
     /**
      * Update the top pawn component
-     * 
+     *
      * @param {Actor} actor the parent actor
      * @param {number} deltaTime time passed since last frame
      * @public
@@ -118,7 +118,7 @@ class PhysicsComponent extends Component
 {
     /**
      * PhysicsComponent - Create a physics component with gravity and air resistance
-     * 
+     *
      * @param {number} airResistance amount of air resistance, from 0 (no resisance), to 1 (can't move)
      * @param {Vector} gravity the force vector. it's direction is used as the "down" and it's magnitude is used as the amount of force
      * @public
@@ -128,25 +128,27 @@ class PhysicsComponent extends Component
         super("PhysicsComponent", updateMethod.FRAME);
         this._gravity = gravity || new Vector(0, 9.81);
         this._airResistance = 1 - (airResistance || 0);
-        
+
         /**
          * Velocity
-         * 
+         *
          * @private
          */
-        this._velocity = new Vector(0, 0);
+        this._velocity = ZERO_VECTOR;
 
         /**
          * Acceleration
-         * 
+         *
          * @private
          */
-        this._acceleration = new Vector(0, 0);
+        this._acceleration = ZERO_VECTOR;
+
+        this.canJump = false;
     }
 
     /**
      * Initialize the gravity component
-     * 
+     *
      * @param {Entity} entity the parent
      * @public
      */
@@ -154,7 +156,7 @@ class PhysicsComponent extends Component
     {
         super.init(entity);
 
-        entity.setCollide(true);
+        entity.setUseCollisions(true);
     }
 
     addForce(force)
@@ -164,14 +166,14 @@ class PhysicsComponent extends Component
 
     /**
      * Update the gravity component
-     * 
-     * @param {Entity} entity 
-     * @param {number} deltaTime 
+     *
+     * @param {Entity} entity
+     * @param {number} deltaTime
      * @public
      */
     update(entity, deltaTime)
     {
-        super.update(deltaTime);
+        super.update(entity, deltaTime);
 
         //add gravity
         if(!this._gravity.isZero())
@@ -185,8 +187,8 @@ class PhysicsComponent extends Component
         //this is the location we are going to be to next frame
 
         //TODO: only update if velocity is not 0
-        const newLocation = entity._location.add(this._velocity);
-        
+        const newLocation = entity.location.add(this._velocity);
+
         //check for a collision
         let wouldCollide = false;
         for(let i = 0; i < entities.length; i++)
@@ -198,13 +200,13 @@ class PhysicsComponent extends Component
             }
 
             //if collision is enabled
-            if(entities[i].getCollide())
+            if(entities[i].useCollisions)
             {
                 if(collideBoxes(
-                    newLocation.add(entity.getWorldLocation()),
-                    entity.getDimensions(),
-                    entities[i].getLocation().add(entities[i].getWorldLocation()),
-                    entities[i].getDimensions()))
+                    newLocation,
+                    {x: entity.width, y: entity.height},
+                    entities[i].location,
+                    {x: entities[i].width, y: entities[i].height}))
                 {
                     console.log("would collide");
                     wouldCollide = true;
@@ -213,23 +215,25 @@ class PhysicsComponent extends Component
             }
         }
 
+        this.canJump = wouldCollide;
+
         if(!wouldCollide)
         {
-            //if the new location won't make use collide, we move to it
+            // if the new location won't make use collide, we move to it
             entity.moveTo(newLocation);
             this._velocity = this._velocity.add(this._acceleration);
         }
         else
         {
-            //TODO: move as far as possible
+            // TODO: move as far as possible
 
-            //TODO: bounce by inverting velocity and absorbing some of it
-            //this._velocity = new Vector(0, 0);
+            // TODO: bounce by inverting velocity and absorbing some of it
+            // this._velocity = new Vector(0, 0);
             this._velocity = this._velocity.invert().multiply(0.3);
         }
 
-        //in any case
-        this._acceleration = new Vector(0, 0);
+        // in any case
+        this._acceleration = ZERO_VECTOR;
         this._velocity = this._velocity.multiply(this._airResistance);
     }
 }

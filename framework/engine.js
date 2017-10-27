@@ -4,7 +4,7 @@ const keysDown = [];
 let interval = 1000 / 60;
 
 //one meter is x pixels
-const meter = 40;
+const meter = 64;
 
 let loopHandle = undefined;
 let loopFunction = undefined;
@@ -28,6 +28,8 @@ const currentDirections =
     VERTICAL: "NONE",
 };
 
+const ZERO_VECTOR = new Vector(0, 0);
+const ONE_VECTOR = new Vector(1, 1);
 const UP_VECTOR = new Vector(0, -1);
 const DOWN_VECTOR = new Vector(0, 1);
 const LEFT_VECTOR = new Vector(-1, 0);
@@ -45,11 +47,16 @@ const collideMethods =
 const inputEvents = {};
 
 const entities = [];
+const objects = [];
+
+let canvas = null;
 
 window.onload = () =>
 {
+    canvas = new Canvas(window.innerWidth, window.innerHeight);
+
     let lastTime = startTime;
-    
+
     loopFunction = () =>
     {
         const now = Date.now();
@@ -65,8 +72,14 @@ window.onload = () =>
         {
             entity.update(delta);
         });
+
+        objects.forEach(object =>
+        {
+            object.update(delta);
+        });
     };
-    loopHandle = setInterval(loopFunction, interval);
+    // TODO: use while ?
+    loopHandle = setInterval(loopFunction, 0);
     looping = true;
 
     //Events
@@ -105,6 +118,8 @@ window.onload = () =>
             keysDown.push(key);
         }
 
+        const oldDirection = currentDirections.HORIZONTAL;
+
         if(key === directionKeys.LEFT)
         {
             currentDirections.HORIZONTAL = "LEFT";
@@ -113,6 +128,16 @@ window.onload = () =>
         {
             currentDirections.HORIZONTAL = "RIGHT";
         }
+
+        if(currentDirections.HORIZONTAL !== oldDirection)
+        {
+
+            if(typeof changedDirection === "function")
+            {
+                changedDirection();
+            }
+        }
+
         if(key === directionKeys.UP)
         {
             currentDirections.VERTICAL = "UP";
@@ -129,7 +154,7 @@ window.onload = () =>
                 inputEvents[key].callback();
             }
         }
-        
+
 
         if(typeof keyDownEvent === "function")
         {
@@ -150,7 +175,9 @@ window.onload = () =>
             keysDown.splice(index, 1);
         }
 
-        
+        const oldDirection = currentDirections.HORIZONTAL;
+
+
         if(key === directionKeys.LEFT)
         {
             if(!isDown(directionKeys.RIGHT))
@@ -159,7 +186,7 @@ window.onload = () =>
             }
             else
             {
-                currentDirections.HORIZONTAL = "RIGHT"; 
+                currentDirections.HORIZONTAL = "RIGHT";
             }
         }
         if(key === directionKeys.RIGHT)
@@ -170,9 +197,19 @@ window.onload = () =>
             }
             else
             {
-                currentDirections.HORIZONTAL = "LEFT"; 
+                currentDirections.HORIZONTAL = "LEFT";
             }
         }
+
+        if(currentDirections.HORIZONTAL !== oldDirection)
+        {
+
+            if(typeof changedDirection === "function")
+            {
+                changedDirection();
+            }
+        }
+
         if(key === directionKeys.UP)
         {
             if(!isDown(directionKeys.DOWN))
@@ -181,7 +218,7 @@ window.onload = () =>
             }
             else
             {
-                currentDirections.VERTICAL = "DOWN"; 
+                currentDirections.VERTICAL = "DOWN";
             }
         }
         if(key === directionKeys.DOWN)
@@ -192,7 +229,7 @@ window.onload = () =>
             }
             else
             {
-                currentDirections.VERTICAL = "UP"; 
+                currentDirections.VERTICAL = "UP";
             }
         }
 
@@ -226,30 +263,20 @@ window.onload = () =>
         }
     }
 
-    //user setup
+    // user setup
     if(typeof setup === "function")
     {
         setup()
     }
 }
 
-//Helpers
-
-function setFrameRate(frameRate)
-{
-    interval = 1000 / frameRate;
-    if(looping)
-    {
-        clearInterval(loopHandle);
-        loopHandle = setInterval(loopFunction, interval);
-    }
-}
+// Helpers
 
 function noLoop()
 {
     looping = false;
     clearInterval(loopHandle);
-    loopHandle = undefined;
+    loopHandle = null;
 }
 
 function addInputEvent(key, release, once, callback)
@@ -266,7 +293,7 @@ function addInputEvent(key, release, once, callback)
 
 function removeInputEvent(key)
 {
-    inputEvents[key] = undefined;
+    delete inputEvents[key];
 }
 
 function isDown(id)
@@ -287,23 +314,46 @@ function millis()
 }
 
 
-function registerEntity(entity)
+function registerObject(object)
 {
-    if(!entities.includes(entity))
+    if(object instanceof Entity)
     {
-        entities.push(entity);
+        if(!entities.includes(object))
+        {
+            entities.push(object);
+        }
+    }
+    else
+    {
+        if(!objects.includes(object))
+        {
+            objects.push(object);
+        }
     }
 }
 
-function unregisterEntity(entity)
+function unregisterObject(object)
 {
-    const i = entities.indexOf(entity);
-    if(i === -1)
+    if(object instanceof Entity)
     {
-        return;
+        const i = entities.indexOf(object);
+        if(i === -1)
+        {
+            return;
+        }
+
+        entities.splice(i, 1);
     }
-    
-    entities.splice(i, 1);
+    else
+    {
+        const i = objects.indexOf(object);
+        if(i === -1)
+        {
+            return;
+        }
+
+        objects.splice(i, 1);
+    }
 }
 
 function randFloat(min, max)
@@ -336,8 +386,8 @@ function clamp(value, min, max)
 
 /**
  * Returns true `pourcent`% of the time
- * 
- * @param {number} pourcent 
+ *
+ * @param {number} pourcent
  */
 function chance(pourcent)
 {

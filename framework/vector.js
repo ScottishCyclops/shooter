@@ -4,7 +4,7 @@ class Vector
 {
     /**
      * Vector - 2D vector class
-     * 
+     *
      * @param {number} x value of the x axis
      * @param {number} y value of the y axis
      * @public
@@ -13,14 +13,14 @@ class Vector
     {
         /**
          * The X axis
-         * 
+         *
          * @public
          */
         this.x = x || 0;
 
         /**
          * The Y axis
-         * 
+         *
          * @public
          */
         this.y = y || 0;
@@ -55,7 +55,7 @@ class Vector
     /**
      * Utility method returning vec if it is a vector
      * or otherwise a new vector from vec as x, and y
-     * 
+     *
      * @param {number} vec a vector or the x component of a vector
      * @param {number} y the y component of a vector or nothing
      */
@@ -137,7 +137,7 @@ class Vector
     {
         return new Vector(this.x, this.y - value instanceof Vector ? value.y : value);
     }
-    
+
     /**
      * Subtracts another vector from this one or a scalar or an `x, y`
      *
@@ -319,7 +319,7 @@ class Vector
     {
         return new Vector(Math.round(this.x), Math.round(this.y));
     }
-    
+
     /**
      * Floors both axis to an integer value
      *
@@ -341,7 +341,7 @@ class Vector
     {
         return new Vector(Math.ceil(this.x), Math.ceil(this.y));
     }
-    
+
     /**
      * Rounds both axis to a certain precision
      *
@@ -439,7 +439,7 @@ class Vector
 
     /**
      * Returns the direction of the vector
-     * 
+     *
      * @return {number} the horizontal angle
      * @public
      */
@@ -450,7 +450,7 @@ class Vector
 
     /**
      * Returns the vertical angle of the vector
-     * 
+     *
      * @return {number} the vertical angle
      * @public
      */
@@ -461,7 +461,7 @@ class Vector
 
     /**
      * Rotates the vector
-     * 
+     *
      * @param {number} angle the angle of rotation in radians
      * @return {Vector} new vector
      * @public
@@ -476,7 +476,7 @@ class Vector
 
     /**
      * Rotates the vector to a certain angle
-     * 
+     *
      * @param {number} angle the angle of rotation in radians
      * @return {Vector} new vector
      * @public
@@ -488,7 +488,7 @@ class Vector
 
     /**
      * Rotates the vector by a certain angle
-     * 
+     *
      * @param {number} angle the angle of rotation in radians
      * @return {Vector} new vector
      * @public
@@ -588,7 +588,7 @@ class Vector
 
     /**
      * Returns a CSS String with the given suffix
-     * 
+     *
      * @param {string} suffix the suffix for each value
      * @return {string} a CSS string representation of the vector
      * @public

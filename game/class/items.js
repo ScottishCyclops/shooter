@@ -174,7 +174,7 @@ class Weapon extends Item
 
             //max 90° of divergence
             let maxDivergence = createVector(direction.y, -direction.x);
-            
+
             //half chance for each side
             if(random() < 50 / 100)
             {
@@ -325,7 +325,7 @@ class Shotgun extends Weapon
 
                 //max 90° of divergence
                 let maxDivergence = createVector(direction.y, -direction.x);
-                
+
                 //half chance for each side
                 if(random() < 50 / 100)
                 {

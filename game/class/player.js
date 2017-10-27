@@ -3,7 +3,7 @@ class Player extends Entity
     constructor(locX, locY)
     {
         super(locX, locY, { width: 6, height: 6, controlled: true });
-        
+
         /*
         this.weapons =
         {
@@ -18,7 +18,7 @@ class Player extends Entity
         this.kills = 0;
     }
 
-    // addForce(force){ this._components[1].addForce(force); }
+    // addForce(force){ this.components[1].addForce(force); }
 
     update(deltaTime)
     {
@@ -112,7 +112,7 @@ class Player extends Entity
     {
         this.velocity.add(RIGHT_VECTOR);
     }
-    
+
     moveDown()
     {
         this.velocity.add(DOWN_VECTOR);

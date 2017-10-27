@@ -25,7 +25,7 @@ class Character extends Actor
     kill()
     {
         this.health = 0;
-        unregisterEntity(this);
+        unregisterObject(this);
     }
 
     isDead()

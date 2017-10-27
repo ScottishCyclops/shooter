@@ -9,28 +9,28 @@ class Component
 {
     /**
      * Component - Base class for each components
-     * 
-     * @param {string} name 
-     * @param {number} method 
-     * @param {any} extra 
+     *
+     * @param {string} name
+     * @param {number} method
+     * @param {any} extra
      * @public
      */
     constructor(name, method, extra)
     {
         /**
          * Component name
-         * 
+         *
          * @public
          */
         this.name = name;
-        
+
         /**
          * Update method
-         * 
+         *
          * @private
          */
         this._method = method;
-        
+
     }
 
     init(entity)
@@ -38,7 +38,7 @@ class Component
         return;
     }
 
-    update(deltaTime)
+    update(entity, deltaTime)
     {
         return;
     }
