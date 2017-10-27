@@ -5,7 +5,7 @@ class Player extends Character
         super(width / 2, height / 2, { radius: meter, speed: kmhToMms(5) });
         this.speed = 10 * meter;
         this.backwardsSpeedRatio = 0.7;
-        
+
         this.weapons =
         {
             1: new TacticalPistol(0),
@@ -16,7 +16,7 @@ class Player extends Character
         //this.knife = new Knife();
         this.activeWeapon = this.weapons[3];
         this.kills = 0;
-        
+
     }
 
     update(delta)
@@ -24,6 +24,7 @@ class Player extends Character
         this.forward = this._location.subtract(mousePos).normalize().invert();
 
         let speed = this.speed * (delta / 1000);
+
 
         let dotVec = DOWN_VECTOR;
         if(this.forward.x > 0)
@@ -76,7 +77,7 @@ class Player extends Character
         {
             this.weapons[i].update(delta, this._location);
         }
-        
+
         this.knife.update(delta, this._location);
         */
 
@@ -115,7 +116,7 @@ class Player extends Character
         this.knife.draw();
 
         //drawing all bullets, even from not the ative weapon
-        
+
         for(let i = 1; i <= 3; i++)
         {
             this.weapons[i].bullets.forEach(function(bullet)
@@ -287,7 +288,7 @@ class Zombie extends Actor
         let fillcolor = lerpColor(color(this.deadColor),
                                   color(this.buffed ? this.buffedColor : this.defaultColor),
                                   this.health / this.maxHealth);
-        
+
         fill(fillcolor);
         noStroke();
 
