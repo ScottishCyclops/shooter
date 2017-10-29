@@ -12,16 +12,14 @@ class Vector
     constructor(x, y)
     {
         /**
-         * The X axis
-         *
-         * @public
+         * @property {number} x the X axis
+         * @readonly
          */
         this.x = x || 0;
 
         /**
-         * The Y axis
-         *
-         * @public
+         * @property {number} y the Y axis
+         * @readonly
          */
         this.y = y || 0;
     }
@@ -301,17 +299,16 @@ class Vector
     {
         const length = this.length();
 
-        if(length !== 0)
+        if(length === 0)
         {
-            return this.divide(length);
+            return new Vector(1, 0);
         }
 
-        return new Vector(1, 0);
+        return this.divide(length);
     }
 
     /**
      * Rounds both axis to an integer value
-     *
      * @return {Vector} new vector
      * @public
      */
@@ -322,18 +319,17 @@ class Vector
 
     /**
      * Floors both axis to an integer value
-     *
      * @return {Vector} new vector
      * @public
      */
     floor()
     {
+        console.log(this.x);
         return new Vector(Math.floor(this.x), Math.floor(this.y));
     }
 
     /**
      * Ceils both axis to an integer value
-     *
      * @return {Vector} new vector
      * @public
      */
@@ -353,7 +349,7 @@ class Vector
     {
         if(precision === undefined)
         {
-            return this.clone();
+            return this;
         }
 
         return new Vector(this.x.toFixed(precision), this.y.toFixed(precision));
@@ -398,19 +394,6 @@ class Vector
         return new Vector(
             (1 - amount) * this.x + amount * value instanceof Vector ? value.x : value,
             (1 - amount) * this.y + amount * value instanceof Vector ? value.y : value);
-    }
-
-    //Products
-
-    /**
-     * Creates a clone of this vector
-     *
-     * @return {Vector} a clone of the vector
-     * @public
-     */
-    clone()
-    {
-        return new Vector(this.x, this.y);
     }
 
     /**
@@ -549,14 +532,102 @@ class Vector
     }
 
     /**
+     * Sets the length (magnitude) of the vector
+     * @param {number} length the new length of the vector (magnitude)
+     * @return {Vector} a new vector with the given length
+     * @public
+     */
+    setLength(length)
+    {
+        return this.normalize().multiply(length);
+    }
+
+    /**
+     * If the vector's x component is greater than max, sets it to max
+     * @param {number} max the maximum length of the x component
+     * @return {Vector} a vector with max as maximum length for x
+     * @public
+     */
+    limitX(max)
+    {
+        if(this.x > max)
+        {
+            return new Vector(max, this.y);
+        }
+
+        return this;
+    }
+
+    /**
+     * If the vector's y component is greater than max, sets it to max
+     * @param {number} max the maximum length of the y component
+     * @return {Vector} a vector with max as maximum length for y
+     * @public
+     */
+    limitY(max)
+    {
+        if(this.y > max)
+        {
+            return new Vector(this.x, max);
+        }
+
+        return this;
+    }
+
+    /**
+     * If the vector's length is greater than max, sets it to max
+     * @param {number} max the maximum length of the vector
+     * @return {Vector} a vector with max as maximum length
+     * @public
+     */
+    limit(max)
+    {
+        if(this.length() > max)
+        {
+            return this.setLength(max);
+        }
+
+        return this;
+    }
+
+    /**
+     * Sets the x component of the vector to the specified value
+     * @param {number} x the value of the x component
+     * @return {Vector} a new vector with x as x component
+     */
+    setX(x)
+    {
+        return new Vector(x, this.y);
+    }
+
+    /**
+     * Sets the y component of the vector to the specified value
+     * @param {number} y the value of the y component
+     * @return {Vector} a new vector with y as y component
+     */
+    setY(y)
+    {
+        return new Vector(this.x, y);
+    }
+
+    /**
      * Returns a true if vector is 0
-     *
      * @return {boolean} true if vector is (0, 0)
      * @public
      */
     isZero()
     {
         return this.x === 0 && this.y === 0;
+    }
+
+    /**
+     * Checks if the vector is unit (normalized)
+     * @return {boolean} true if the vector's length is 1
+     * @public
+     */
+    isUnit()
+    {
+        return this.length() === 1;
     }
 
     /**
@@ -621,3 +692,6 @@ class Vector
         return { x: this.x, y: this.y };
     }
 }
+
+const ZERO_VECTOR = new Vector(0, 0);
+const ONE_VECTOR = new Vector(1, 1);

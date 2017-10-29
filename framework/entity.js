@@ -1,14 +1,5 @@
 "use strict"
 
-const DEFAULT_SIZE = 32;
-
-const origin =
-{
-    TOPLEFT: 0,
-    CENTER: 1,
-
-};
-
 class Entity
 {
     /**
@@ -42,22 +33,16 @@ class Entity
         this.scale = new Vector(extras.scaleX || 1, extras.scaleY || 1);
 
         /**
-         * @property {Vector} forward the forward vector of the entity (facing up at first)
-         * @readonly
-         */
-        this.forward = UP_VECTOR;
-
-        /**
          * @property {number} width width of the entity
          * @readonly
          */
-        this.width = extras.width;
+        this.width = extras.width || meter;
 
         /**
          * @property {number} height height of the entity
          * @readonly
          */
-        this.height = extras.height;
+        this.height = extras.height || meter;
 
         /**
          * @property {boolean} hidden visibility flag
@@ -84,19 +69,22 @@ class Entity
         this.color = extras.color || 0;
 
         /**
-         * @property {Entity[]} _children this entity's children
-         * @protected
+         * @property {string} sprite the path to the image sprite to use
+         * @readonly
          */
-        this._children = [];
+        this.sprite = extras.sprite || "";
+
+        /**
+         * @property {Entity[]} _children this entity's children
+         * @readonly
+         */
+        this.children = [];
 
         /**
          * @property {any} components the indexed list of components of this entity
          * @readonly
          */
         this.components = {};
-
-        this._background = extras.spritePath || "";
-        this._offset = new Vector;
 
         /**
          * @property {any} _html html div element
@@ -118,8 +106,6 @@ class Entity
         this._updateDepth();
         this._updateColor();
         this._updateBackground();
-
-        this.setOrigin(extras.origin || origin.TOPLEFT);
 
         // auto registering
         registerObject(this);
@@ -224,21 +210,11 @@ class Entity
         return this;
     }
 
-    setOrigin(mode)
+    setSprite(sprite)
     {
-        switch(mode)
-        {
-            case origin.TOPLEFT: this._offset = new Vector;                                  break;
-            case origin.CENTER:  this._offset = new Vector(this.width / 2, this.height / 2); break;
-        }
-
-        return this;
-    }
-
-    setSprite(spritePath)
-    {
-        this._background = spritePath;
+        this.sprite = sprite;
         this._updateBackground();
+        return this;
     }
 
     // Events
@@ -246,11 +222,13 @@ class Entity
     onLeftClick(callback)
     {
         this._html.onclick = callback;
+        return this;
     }
 
     onRightClick(callback)
     {
         this._html.oncontextmenu = callback;
+        return this;
     }
 
     update(deltaTime)
@@ -259,6 +237,7 @@ class Entity
         {
             this.components[i].update(this, deltaTime);
         }
+        return this;
     }
 
     // CSS update methods
@@ -266,7 +245,7 @@ class Entity
     _updateTransform()
     {
         // auto offset to center of div when drawing
-        this._html.style.transform = `translate${this.location.subtract(this._offset).toCssString(PX)} scale${this.scale.toCssString()} rotate(${this.rotation}rad)`;
+        this._html.style.transform = `translate${this.location.toCssString(PX)} scale${this.scale.toCssString()} rotate(${this.rotation}rad)`;
     }
 
     _updateWidth()
@@ -296,7 +275,7 @@ class Entity
 
     _updateBackground()
     {
-        this._html.style.backgroundImage = `url(${this._background})`;
+        this._html.style.backgroundImage = `url(${this.sprite})`;
     }
 
     // Utilities
@@ -309,17 +288,18 @@ class Entity
      */
     appendChild(child)
     {
-        const index = this._children.indexOf(child);
+        const index = this.children.indexOf(child);
         if(index !== -1)
         {
             return;
         }
 
-        this._children.push(child);
+        this.children.push(child);
         // add to the dom
         canvas._html.appendChild(child._html);
 
-        this._updateChildLocation(child, new Vector(0, 0));
+        this._updateChildLocation(child, ZERO_VECTOR);
+        return this;
     }
 
     /**
@@ -330,14 +310,15 @@ class Entity
      */
     removeChild(child)
     {
-        const index = this._children.indexOf(child);
+        const index = this.children.indexOf(child);
         if(index === -1)
         {
             return;
         }
 
-        this._children.splice(index, 1);
+        this.children.splice(index, 1);
         this._html.removeChild(child._html);
+        return this;
     }
 
     /**
@@ -358,7 +339,7 @@ class Entity
      */
     _updateChildrenLocation(vec)
     {
-        this._children.forEach(child =>
+        this.children.forEach(child =>
         {
             this._updateChildLocation(child, vec);
         });
@@ -373,6 +354,7 @@ class Entity
     {
         this.components[component.name] = component;
         component.init(this);
+        return this;
     }
 
     /**
@@ -382,6 +364,7 @@ class Entity
     removeComponent(name)
     {
         this.components[name] = undefined;
+        return this;
     }
 
     /**

@@ -49,3 +49,10 @@ function collideBoxes(loc1, dim1, loc2, dim2)
            loc1.y < loc2.y + dim2.y &&
            loc1.y + dim1.y > loc2.y;
 }
+
+function overlaps(entity1, entity2)
+{
+    if(Math.abs(entity1.location.x - entity2.location.x) > (entity1.width / 2) + (entity2.height / 2)) return false;
+    if(Math.abs(entity1.location.y - entity2.location.y) > (entity1.height / 2) + (entity2.width / 2)) return false;
+    return true;
+}

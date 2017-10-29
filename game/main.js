@@ -1,34 +1,26 @@
-/*
-TODO
-more zombie, more loot
-noLoop, gameover screen
-R for reload
-
-*/
-
-
-// constantes
-const pickableEvery = 2000;
-const uiHeight = 120;
-
 const width = window.innerWidth;
-const height = window.innerHeight // - uiHeight;
+const height = window.innerHeight;
 
 let transition = null;
 let transitionTimout = null;
 
-let world, camera;
-
-// classes
-let player, kb, ui;
-
-let pickables = [];
-let zombies = [];
-let wave;
-
+let world, camera, player;
+let box1, box2;
 
 function setup()
 {
+    canvas.setColor("#222");
+
+    box1 = new Entity(10, 20, { width: meter * 2, height: meter * 4, color: "#DDD" });
+    box2 = new Entity(40, 10, { width: meter * 4, height: meter * 2, color: "#AAA" });
+
+    player = new Actor(innerWidth / 2, innerHeight / 2, { color: "orange" });
+
+
+    canvas.appendChild(box1).appendChild(box2).appendChild(player);
+
+    //#region data
+    /*
     world = new Container;
     camera = new Container;
 
@@ -49,130 +41,23 @@ function setup()
     canvas.appendChild(camera);
 
     createWorld();
+    */
+    //#endregion
+}
 
-    // player.setColor("#333");
-
-    //kb = new Input();
-    //ui = new Ui(uiHeight);
-
-    //wave = 1;
-    //spawnWave(wave);
+function mouseUpEvent(e)
+{
+    /*
+    box2.moveTo(mousePos);
+    console.log(overlaps(box1, box2));
+    */
 }
 
 
 function loop(deltaTime)
 {
-    const speed = player.speed * deltaTime * meter * -1;
-
-    if(currentDirections.HORIZONTAL !== "NONE")
-    {
-        if(currentDirections.HORIZONTAL === "LEFT")
-        {
-            world.moveBy(-speed, 0);
-        }
-        else
-        {
-            world.moveBy(speed, 0);
-        }
-    }
-    else
-    {
-        // camera.moveTo(0, 0);
-    }
-
-    document.title = (1000 / deltaTime).toFixed(1);
-
-    // player.rotateBy(degreesToRadian(12));
-
-    /*
-
-    spawnPickable();
-
-    if(!player.isDead())
-    {
-        // delta time calculation
-        let currentTime = millis();
-        delta = currentTime - lastTime;
-        lastTime = currentTime;
-
-
-        if(kb.controls["UP"]["DOWN"])      player.moveUp();
-        if(kb.controls["LEFT"]["DOWN"])    player.moveLeft();
-        if(kb.controls["RIGHT"]["DOWN"])   player.moveRight();
-        if(kb.controls["DOWN"]["DOWN"])    player.moveDown();
-        if(kb.controls["SHOOT"]["DOWN"])   player.tryShooting();
-
-        player.update(delta);
-
-        // process every zombie
-        for(let i = zombies.length - 1; i >= 0; i--)
-        {
-            zombies[i].update();
-
-            if(zombies[i].isDead())
-            {
-                zombies.splice(i, 1);
-                player.kills++;
-            }
-            else
-            {
-                zombies[i].draw();
-            }
-        }
-
-        // draw all pickables
-        pickables.forEach(pickable =>
-        {
-            pickable.draw();
-        });
-
-        player.draw();
-
-        ui.draw();
-
-        if(zombies.length === 0)
-        {
-            // TODO: warn for next wave, give loot ?
-            wave++;
-            spawnPickable();
-            spawnWave(wave);
-        }
-    }
-    else
-    {
-        // end of the game
-        noLoop();
-        console.log("Game over");
-        // clear zombies
-        zombies = null;
-    }
-    */
+    // document.title = (1000 / deltaTime).toFixed(1);
 }
-
-/*
-function keyPressed()
-{
-    kb.updateKeys(keyCode, true);
-}
-
-
-function keyReleased()
-{
-    kb.updateKeys(keyCode, false);
-}
-
-
-function mousePressed()
-{
-    kb.updateButtons(mouseButton, true);
-}
-
-
-function mouseReleased()
-{
-   kb.updateButtons(mouseButton, false);
-}
-*/
 
 function changedDirection()
 {

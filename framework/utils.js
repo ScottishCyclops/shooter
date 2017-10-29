@@ -2,11 +2,13 @@
 
 const DEGREES = 180 / Math.PI;
 const PX = "px";
+const GRAVITY = 9.81;
+const TERMINAL_VELOCITY = 10;
 
 /**
  * Converts a radian angle to a degree angle
  * @param {number} rad the angle in radians
- * @return {number} the angle in degrees 
+ * @return {number} the angle in degrees
  */
 function radianToDegrees(rad)
 {
@@ -16,7 +18,7 @@ function radianToDegrees(rad)
 /**
  * Converts a degree angle to a radian angle
  * @param {number} deg the angle in degrees
- * @return {number} the angle in radians 
+ * @return {number} the angle in radians
  */
 function degreesToRadian(deg)
 {
@@ -65,7 +67,7 @@ function msToMms(meters)
 
 /**
  * Converts meters per millisecond in meters per second
- * @param {number} millimeters 
+ * @param {number} millimeters
  */
 function mmsToMs(meters)
 {
@@ -74,7 +76,7 @@ function mmsToMs(meters)
 
 /**
  * Converts meters per millisecond in kilometers per hour
- * @param {number} meters 
+ * @param {number} meters
  */
 function mmsToKhm(meters)
 {

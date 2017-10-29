@@ -14,22 +14,12 @@ const startTime = Date.now();
 let mouseX = 0, mouseY = 0;
 let mousePos = new Vector(0, 0);
 
-const directionKeys =
-{
-    LEFT:  "a",
-    RIGHT: "d",
-    UP:    "w",
-    DOWN:  "s",
-};
-
 const currentDirections =
 {
     HORIZONTAL: "NONE",
     VERTICAL: "NONE",
 };
 
-const ZERO_VECTOR = new Vector(0, 0);
-const ONE_VECTOR = new Vector(1, 1);
 const UP_VECTOR = new Vector(0, -1);
 const DOWN_VECTOR = new Vector(0, 1);
 const LEFT_VECTOR = new Vector(-1, 0);
@@ -118,6 +108,7 @@ window.onload = () =>
             keysDown.push(key);
         }
 
+        /*
         const oldDirection = currentDirections.HORIZONTAL;
 
         if(key === directionKeys.LEFT)
@@ -146,6 +137,7 @@ window.onload = () =>
         {
             currentDirections.VERTICAL = "DOWN";
         }
+        */
 
         if(inputEvents[key] !== undefined)
         {
@@ -175,6 +167,7 @@ window.onload = () =>
             keysDown.splice(index, 1);
         }
 
+        /*
         const oldDirection = currentDirections.HORIZONTAL;
 
 
@@ -232,6 +225,7 @@ window.onload = () =>
                 currentDirections.VERTICAL = "UP";
             }
         }
+        */
 
         if(inputEvents[key] !== undefined)
         {
