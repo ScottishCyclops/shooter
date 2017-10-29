@@ -1,23 +1,24 @@
-const width = window.innerWidth;
-const height = window.innerHeight;
-
 let transition = null;
 let transitionTimout = null;
 
 let world, camera, player;
 let box1, box2;
 
+let dataBox;
+
 function setup()
 {
     canvas.setColor("#222");
 
-    box1 = new Entity(10, 20, { width: meter * 2, height: meter * 4, color: "#DDD" });
+    box1 = new Entity(0, innerHeight - 30, { width: innerWidth, height: 30, color: "#DDD", useCollisions: true });
     box2 = new Entity(40, 10, { width: meter * 4, height: meter * 2, color: "#AAA" });
 
     player = new Actor(innerWidth / 2, innerHeight / 2, { color: "orange" });
 
+    dataBox = new TextEntity(innerWidth / 2, 10, {color: "white", family: "monospace", size: 20});
 
-    canvas.appendChild(box1).appendChild(box2).appendChild(player);
+    canvas.appendChild(box1).appendChild(box2).appendChild(player).appendChild(dataBox);
+
 
     //#region data
     /*
@@ -56,7 +57,10 @@ function mouseUpEvent(e)
 
 function loop(deltaTime)
 {
-    // document.title = (1000 / deltaTime).toFixed(1);
+    dataBox.setText(
+        `FPS          ${Math.floor(1000 / deltaTime)}\n`,
+        `VELOCITY     ${player.velocity}\n`
+    );
 }
 
 function changedDirection()

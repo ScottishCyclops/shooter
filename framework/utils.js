@@ -2,8 +2,9 @@
 
 const DEGREES = 180 / Math.PI;
 const PX = "px";
-const GRAVITY = 9.81;
-const TERMINAL_VELOCITY = 10;
+const GRAVITY = msToMms(9.81);
+const TERMINAL_VELOCITY = 3;
+const DRAG = 0.1;
 
 /**
  * Converts a radian angle to a degree angle
@@ -86,4 +87,9 @@ function mmsToKhm(meters)
 Array.prototype.includes = function(element)
 {
     return this.indexOf(element) !== -1;
-}
+};
+
+String.prototype.htmlSpaces = function()
+{
+    return this.replace(/ /g, '\u00a0');
+};

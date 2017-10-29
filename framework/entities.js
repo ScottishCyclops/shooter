@@ -15,9 +15,8 @@ class MovingEntity extends Entity
 
         // physics
 
-        this.lastLocation = ZERO_VECTOR;
         this.velocity =     ZERO_VECTOR;
-        this.lastVelocity = ZERO_VECTOR;
+        this.acceleration = ZERO_VECTOR;
         // this.acceleration = ZERO_VECTOR;
 
         this.left =      false;
@@ -30,41 +29,97 @@ class MovingEntity extends Entity
         this.wasBottom = false;
     }
 
+    addForce(force)
+    {
+        this.acceleration = this.acceleration.add(force);
+    }
+
     updatePhysics(deltaTime)
     {
-        let newLocation = this.location;
-
-        this.lastLocation = this.location;
-        this.lastVelocity = this.velocity;
-
         this.wasLeft =   this.left;
         this.wasRight =  this.right;
         this.wasTop =    this.top;
         this.wasBottom = this.bottom;
 
+        //add gravity
+        this.acceleration = this.acceleration.addY(GRAVITY * meter * deltaTime * deltaTime);
 
-        /*
-        const speed = this.speed * deltaTime * meter;
+        //proactive collision detection
+        //this is the location we are going to be to next frame
 
-        if(currentDirections.HORIZONTAL === "RIGHT")
+        let wouldCollide = false;
+        const newLocation = this.location.add(this.velocity);
+
+        if(!this.velocity.isZero())
         {
-            speed *= -1;
+            //check for a collision
+            for(let i = 0; i < entities.length; i++)
+            {
+                //ignore self collision
+                if(entities[i] === this)
+                {
+                    continue;
+                }
+
+                //if collision is enabled
+                if(entities[i].useCollisions)
+                {
+                    if(
+                        overlaps(newLocation,
+                        this.getDimensions(),
+                        entities[i].location,
+                        entities[i].getDimensions())
+                    )
+                    {
+                        console.log("collision");
+
+                        // check the side from which we collide, using the original
+                        // location
+                        /*
+                        if(this.location.y > entities[i].location.y)
+                        {
+                            // below
+                            this.top = true;
+                        }
+                        else if(this.location.y + this.height < entities[i].location.y + entities[i].height)
+                        {
+                            // above
+                            this.bottom = true;
+                        }
+
+                        if(this.location.x )
+                        */
+
+                        // TODO: handle collision from all sides. return value from overlaps ?
+                        this.bottom = true;
+                        this.velocity = this.velocity.setY(0);
+                        wouldCollide = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(!wouldCollide)
+        {
+            // if the new location won't make us collide, we move to it
+            this.moveTo(newLocation);
+            this.velocity = this.velocity.add(this.acceleration).limit(TERMINAL_VELOCITY * deltaTime);
+        }
+        /*
+        else
+        {
+            // TODO: move as far as possible
+
+            // this._velocity = new Vector(0, 0);
+            this._velocity = this._velocity.invert().multiply(0.3);
+            this.velocity = ZERO_VECTOR;
         }
         */
 
-        newLocation = newLocation.add(this.velocity.multiply(deltaTime));
-
-        if(this.location.y >= innerHeight - this.height)
-        {
-            newLocation = newLocation.setY(innerHeight - this.height);
-            this.bottom = true;
-        }
-        else
-        {
-            this.bottom = false;
-        }
-
-        this.moveTo(newLocation);
+        // in any case
+        this.acceleration = ZERO_VECTOR;
+        this.velocity = this.velocity.multiply(1 - DRAG);
     }
 }
 
@@ -116,6 +171,8 @@ class Actor extends MovingEntity
             }
         }
         */
+
+        /*
 
         switch(this.state)
         {
@@ -233,6 +290,7 @@ class Actor extends MovingEntity
             case actorState.LADDER_DOWN:
                 break;
         }
+        */
 
         super.update(deltaTime);
         this.updatePhysics(deltaTime);
@@ -273,5 +331,79 @@ class Canvas extends Entity
         super(0, 0, { width: width, height: height, depth: -999 });
 
         document.body.appendChild(this._html);
+    }
+}
+
+class TextEntity extends Entity
+{
+    constructor(locX, locY, extras)
+    {
+        extras = extras || {};
+
+        // change default width for text to avoid line feed
+        extras.width = extras.width || 900;
+
+        super(locX, locY, extras);
+
+        this.text = extras.text || "";
+        this.bold = extras.bold || false;
+        this.family = extras.family || "sans";
+        this.size = extras.size || "1em";
+
+        this._updateText();
+        this._updateBold();
+        this._updateFamily();
+        this._updateSize();
+    }
+
+    _updateText()
+    {
+        this._html.innerText = this.text.htmlSpaces();
+    }
+
+    _updateBold()
+    {
+        this._html.style.fontWeight = this.bold ? "bold" : "normal";
+    }
+
+    _updateColor()
+    {
+        this._html.style.color = this.color;
+    }
+
+    _updateFamily()
+    {
+        this._html.style.fontFamily = this.family;
+    }
+
+    _updateSize()
+    {
+        // consider a simple number as expressed in pixels
+        this._html.style.fontSize = typeof this.size === "number" ?
+            this.size + PX : this.size;
+    }
+
+    setText(...text)
+    {
+        this.text = text.join("");
+        this._updateText();
+    }
+
+    setBold(bold)
+    {
+        this.bold = bold;
+        this._updateBold();
+    }
+
+    setFamily(family)
+    {
+        this.family = family;
+        this._updateFamily();
+    }
+
+    setSize(size)
+    {
+        this.size = size;
+        this._updateSize();
     }
 }

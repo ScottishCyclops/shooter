@@ -217,6 +217,11 @@ class Entity
         return this;
     }
 
+    getDimensions()
+    {
+        return new Vector(this.width, this.height);
+    }
+
     // Events
 
     onLeftClick(callback)

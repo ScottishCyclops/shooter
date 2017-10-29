@@ -24,9 +24,8 @@ const UP_VECTOR = new Vector(0, -1);
 const DOWN_VECTOR = new Vector(0, 1);
 const LEFT_VECTOR = new Vector(-1, 0);
 const RIGHT_VECTOR = new Vector(1, 0);
-const PI = Math.PI;
-const HALF_PI = PI / 2;
-const TWO_PI = PI * 2;
+const HALF_PI = Math.PI / 2;
+const TWO_PI = Math.PI * 2;
 
 const collideMethods =
 {
@@ -43,7 +42,7 @@ let canvas = null;
 
 window.onload = () =>
 {
-    canvas = new Canvas(window.innerWidth, window.innerHeight);
+    canvas = new Canvas(innerWidth, innerHeight);
 
     let lastTime = startTime;
 

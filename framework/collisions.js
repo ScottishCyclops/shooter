@@ -42,6 +42,7 @@ function collideCircles(loc1, diam1, loc2, diam2)
  * @param {Vector} loc2 location of the second box
  * @param {Vector} dim2 dimensions of the second box
  */
+/*
 function collideBoxes(loc1, dim1, loc2, dim2)
 {
     return loc1.x < loc2.x + dim2.x &&
@@ -49,10 +50,28 @@ function collideBoxes(loc1, dim1, loc2, dim2)
            loc1.y < loc2.y + dim2.y &&
            loc1.y + dim1.y > loc2.y;
 }
+*/
 
-function overlaps(entity1, entity2)
+
+/**
+ * Returns wheter two rectangles overlap or not
+ * @param {Vector} loc1 location of the first rectangle
+ * @param {Vector} dim1 dimensions of the first rectangle
+ * @param {Vector} loc2 location of the second rectangle
+ * @param {Vector} dim2 dimensions of the second rectangle
+ * @return {boolean} true if the rectangles overlap
+ */
+function overlaps(loc1, dim1, loc2, dim2)
 {
-    if(Math.abs(entity1.location.x - entity2.location.x) > (entity1.width / 2) + (entity2.height / 2)) return false;
-    if(Math.abs(entity1.location.y - entity2.location.y) > (entity1.height / 2) + (entity2.width / 2)) return false;
+    if(Math.abs(loc1.x - loc2.x) > (dim1.x / 2) + (dim2.y / 2))
+    {
+        return false;
+    }
+
+    if(Math.abs(loc1.y - loc2.y) > (dim1.y / 2) + (dim2.x / 2))
+    {
+        return false;
+    }
+
     return true;
 }
