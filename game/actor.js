@@ -85,6 +85,7 @@ class Actor extends MovingEntity
         {
             // apply gravity as long as we are not in collision at the bottom
             this.acceleration = this.acceleration.addY(GRAVITY * meter * deltaTime / 4);
+            this.setSprite("res/spaceguy/jump.gif");
         }
 
         if(this.bottom && !this.wasBottom)
@@ -99,7 +100,6 @@ class Actor extends MovingEntity
         {
             this.acceleration = this.acceleration.addY(-this.jumpForce * deltaTime * (this.jumpPressingTime / this.maxJumpPressingTime));
             this.jumpPressingTime -= deltaTime;
-            this.setSprite("res/spaceguy/jump.gif");
         }
 
         //TODO: use this code

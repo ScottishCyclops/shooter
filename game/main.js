@@ -115,12 +115,10 @@ function loop(deltaTime)
     dataBox.setText(
         `FPS      ${Math.floor(1000 / deltaTime)}\n`,
         `VELOCITY ${player.velocity}\n`,
-        `STATE    ${player.state}\n`,
         `TOP      ${player.top}\n`,
         `RIGHT    ${player.right}\n`,
         `BOTTOM   ${player.bottom}\n`,
         `LEFT     ${player.left}\n`,
-        `JUMP     ${player.jumpPressingTime}\n`
     );
 }
 
