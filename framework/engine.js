@@ -1,18 +1,11 @@
-"use strict"
-
-const keysDown = [];
-let interval = 1000 / 60;
-
-//one meter is x pixels
+// one meter is x pixels
 const meter = 64;
-
+const startTime = Date.now();
 let loopHandle = undefined;
 let loopFunction = undefined;
 let looping = false;
-const startTime = Date.now();
-
-let mouseX = 0, mouseY = 0;
-let mousePos = new Vector(0, 0);
+let mousePos = ZERO_VECTOR
+let canvas = null;
 
 const UP_VECTOR = new Vector(0, -1);
 const DOWN_VECTOR = new Vector(0, 1);
@@ -21,18 +14,10 @@ const RIGHT_VECTOR = new Vector(1, 0);
 const HALF_PI = Math.PI / 2;
 const TWO_PI = Math.PI * 2;
 
-const collideMethods =
-{
-    BOX: 0,
-    CIRCLE: 1
-};
-
 const inputEvents = {};
-
+const keysDown = [];
 const entities = [];
 const objects = [];
-
-let canvas = null;
 
 window.onload = () =>
 {
@@ -65,17 +50,14 @@ window.onload = () =>
     loopHandle = setInterval(loopFunction, 0);
     looping = true;
 
-    //Events
+    // Events
 
     document.onmousedown = e =>
     {
         if(typeof mouseDownEvent === "function")
         {
-            //if it returns anything, we cancel the event
-            if(mouseDownEvent(e))
-            {
-                return false;
-            }
+            // if it returns anything, we cancel the event
+            return mouseDownEvent(e);
         }
     };
 
@@ -83,11 +65,7 @@ window.onload = () =>
     {
         if(typeof mouseUpEvent === "function")
         {
-            //if it returns anything, we cancel the event
-            if(mouseUpEvent(e))
-            {
-                return false;
-            }
+             return mouseUpEvent(e);
         }
     };
 
@@ -111,10 +89,7 @@ window.onload = () =>
 
         if(typeof keyDownEvent === "function")
         {
-            if(keyDownEvent(key))
-            {
-                return false;
-            }
+            return keyDownEvent(key);
         }
     };
 
@@ -138,19 +113,13 @@ window.onload = () =>
 
         if(typeof keyUpEvent === "function")
         {
-            if(keyUpEvent(key))
-            {
-                return false;
-            }
+            return keyUpEvent(key);
         }
     };
 
     document.onmousemove = e =>
     {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-
-        mousePos = new Vector(mouseX, mouseY);
+        mousePos = new Vector(e.clientX, e.clientY);
 
         if(typeof mouseMoveEvent === "function")
         {
@@ -167,6 +136,9 @@ window.onload = () =>
 
 // Helpers
 
+/**
+ * Stop the update looping
+ */
 function noLoop()
 {
     looping = false;
@@ -174,6 +146,13 @@ function noLoop()
     loopHandle = null;
 }
 
+/**
+ * Add an input event
+ * @param {string} key the key for which to call back
+ * @param {boolean} release should the callback be when the key is released
+ * @param {boolean} once should the callback only happen once
+ * @param {Function} callback the function to call
+ */
 function addInputEvent(key, release, once, callback)
 {
     inputEvents[key] = { release: release, callback: () =>
@@ -186,29 +165,53 @@ function addInputEvent(key, release, once, callback)
     }};
 }
 
+/**
+ * Remove an input event
+ * @param {string} key the key for which to clear the event
+ */
 function removeInputEvent(key)
 {
     delete inputEvents[key];
 }
 
-function isDown(id)
+/**
+ * Returns whether or not the provided key is currently pressed or not
+ * @param {string} key the key to check
+ * @return {boolean} true if the key is currently beeing pressed
+ */
+function isDown(key)
 {
-    return keysDown.indexOf(id) !== -1;
+    return keysDown.indexOf(key) !== -1;
 }
 
-function wasPressedBefore(id1, id2)
+/**
+ * Checks if `key1` was pressed before `key2` or not
+ * @param {string} key1 the first key
+ * @param {string} key2 the second key
+ * @return {boolean} true if `key1` was pressed before `key2`
+ */
+function wasPressedBefore(key1, key2)
 {
-    const index1 = keysDown.indexOf(id1);
-    const index2 = keysDown.indexOf(id2);
+    const index1 = keysDown.indexOf(key1);
+    const index2 = keysDown.indexOf(key2);
     return  index1 === -1 ? 999 : index1 < index2 === -1 ? 999 : index2;
 }
 
+/**
+ * Returns the current time in milliseconds since the program started
+ * @return {number} the number of milliseconds
+ */
 function millis()
 {
     return Date.now() - startTime;
 }
 
-
+/**
+ * Adds an object to the registered list to be updated every frame
+ * 
+ * Determines if it is an Entity or any other object
+ * @param {any} object the object to register
+ */
 function registerObject(object)
 {
     if(object instanceof Entity)
@@ -227,6 +230,10 @@ function registerObject(object)
     }
 }
 
+/**
+ * Removes an object from the registered list
+ * @param {any} object the object to remove
+ */
 function unregisterObject(object)
 {
     if(object instanceof Entity)
@@ -249,49 +256,4 @@ function unregisterObject(object)
 
         objects.splice(i, 1);
     }
-}
-
-function randFloat(min, max)
-{
-    if(max === undefined)
-    {
-        // assume max was given if only one param
-        return Math.random() * min;
-    }
-    else
-    {
-        return Math.random() * (max - min) + min;
-    }
-}
-
-function randInt(min, max)
-{
-    return Math.floor(randFloat(min, max));
-}
-
-function map(value, inMin, inMax, outMin, outMax)
-{
-    return outMin + (outMax - outMin) * (value - inMin) / (inMax - inMin);
-}
-
-function clamp(value, min, max)
-{
-    return Math.min(Math.max(value, min), max);
-}
-
-/**
- * Returns true `pourcent`% of the time
- *
- * @param {number} pourcent
- */
-function chance(pourcent)
-{
-    pourcent = clamp(pourcent, 0, 100);
-
-    return Math.random() < pourcent / 100;
-}
-
-function lerp(x, y, alpha)
-{
-    return (1 - alpha) * x + alpha * y;
 }

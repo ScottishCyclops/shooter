@@ -1,10 +1,7 @@
-"use strict"
-
 class Entity
 {
     /**
-     * Entity - Base class for anything that is physically present in the game world
-     *
+     * Entity - Base class for anything that is physically present in the world
      * @param {number} locX the x position in the world of the entity
      * @param {number} locY the y position in the world of the entity
      * @param {any} extras any extra parameters
@@ -75,20 +72,14 @@ class Entity
         this.sprite = extras.sprite || "";
 
         /**
-         * @property {Entity[]} _children this entity's children
+         * @property {Entity[]} children this entity's children
          * @readonly
          */
         this.children = [];
 
         /**
-         * @property {any} components the indexed list of components of this entity
-         * @readonly
-         */
-        this.components = {};
-
-        /**
          * @property {any} _html html div element
-         * @protected
+         * @private
          */
         this._html = document.createElement("div");
 
@@ -113,6 +104,13 @@ class Entity
 
     // Transform methods
 
+    /**
+     * Moves the entity to the specified location
+     * @param {Vector} vec the vector to set the location, or the x component
+     * @param {number} y the y compoenent, or undefined
+     * @return {Entity} itself to be chainable
+     * @public
+     */
     moveTo(vec, y)
     {
         // if(y === undefined)
@@ -130,6 +128,13 @@ class Entity
         return this;
     }
 
+    /**
+     * Moves the entity by specified amount
+     * @param {Vector} vec the vector to add to the location, or the x component
+     * @param {number} y the y compoenent, or undefined
+     * @return {Entity} itself to be chainable
+     * @public
+     */
     moveBy(vec, y)
     {
         this.location = this.location.add(vec, y);
@@ -141,6 +146,12 @@ class Entity
         return this;
     }
 
+    /**
+     * Rotates the entity to the specified amount
+     * @param {number} angle the angle of rotation in radians
+     * @return {Entity} itself to be chainable
+     * @public
+     */
     rotateTo(angle)
     {
         this.rotation = angle % TWO_PI;
@@ -148,6 +159,12 @@ class Entity
         return this;
     }
 
+    /**
+     * Rotates the entity by the specified amount
+     * @param {number} angle the angle of rotation in radians
+     * @return {Entity} itself to be chainable
+     * @public
+     */
     rotateBy(angle)
     {
         this.rotation = (this.rotation + angle) % TWO_PI;
@@ -155,6 +172,13 @@ class Entity
         return this;
     }
 
+    /**
+     * Scales the entity to the specified scale
+     * @param {Vector} vec the vector to scale to, or the x component
+     * @param {number} y the y compoenent, or undefined
+     * @return {Entity} itself to be chainable
+     * @public
+     */
     scaleTo(vec, y)
     {
         this.scale = Vector.prototype.fromVecY(vec, y);
@@ -162,6 +186,13 @@ class Entity
         return this;
     }
 
+    /**
+     * Scales the entity by the specified amount
+     * @param {Vector} vec the vector to scale by, or the x component
+     * @param {number} y the y compoenent, or undefined
+     * @return {Entity} itself to be chainable
+     * @public
+     */
     scaleBy(vec, y)
     {
         this.scale = this.scale.multiply(vec, y);
@@ -169,6 +200,12 @@ class Entity
         return this;
     }
 
+    /**
+     * Sets the width of the entity
+     * @param {number} width new width of the entity
+     * @return {Entity} itself to be chainable
+     * @public
+     */
     setWidth(width)
     {
         this.width = width;
@@ -176,6 +213,12 @@ class Entity
         return this;
     }
 
+    /**
+     * Sets the height of the entity
+     * @param {number} height new height of the entity
+     * @return {Entity} itself to be chainable
+     * @public
+     */
     setHeight(height)
     {
         this.height = height;
@@ -183,6 +226,12 @@ class Entity
         return this;
     }
 
+    /**
+     * Sets the visibility of the entity
+     * @param {boolean} hidden true to hide the entity
+     * @return {Entity} itself to be chainable
+     * @public
+     */
     setHidden(hidden)
     {
         this.hidden = hidden;
@@ -190,12 +239,24 @@ class Entity
         return this;
     }
 
+    /**
+     * Choose to participate in collisions or not
+     * @param {boolean} useCollisions true to participate in collisions
+     * @return {Entity} itself to be chainable
+     * @public
+     */
     setUseCollisions(useCollisions)
     {
         this.useCollisions = useCollisions;
         return this;
     }
 
+    /**
+     * Sets the depth / layer of the entity
+     * @param {number} depth the depth or layer of the entity
+     * @return {Entity} itself to be chainable
+     * @public
+     */
     setDepth(depth)
     {
         this.depth = depth;
@@ -203,6 +264,12 @@ class Entity
         return this;
     }
 
+    /**
+     * Sets the fill color of the entity
+     * @param {string} color a valid CSS color representation
+     * @return {Entity} itself to be chainable
+     * @public
+     */
     setColor(color)
     {
         this.color = color;
@@ -210,6 +277,12 @@ class Entity
         return this;
     }
 
+    /**
+     * Sets the background image of the entity
+     * @param {string} sprite the path to the image
+     * @return {Entity} itself to be chainable
+     * @public
+     */
     setSprite(sprite)
     {
         this.sprite = sprite;
@@ -217,16 +290,32 @@ class Entity
         return this;
     }
 
+    /**
+     * Returns a new Vector with `width` as x and `height` as y
+     * @return {Vector} the dimensions of the entity
+     * @public
+     */
     getDimensions()
     {
+        // TODO: take the scale into account
         return new Vector(this.width, this.height);
     }
 
+    /**
+     * Returns the center x of the entity
+     * @return {number} the center x in pixels
+     * @public
+     */
     getCenterX()
     {
         return this.location.x + this.width / 2;
     }
 
+    /**
+     * Returns the center y of the entity
+     * @return {number} the center y in pixels
+     * @public
+     */
     getCenterY()
     {
         return this.location.y + this.height / 2;
@@ -234,25 +323,38 @@ class Entity
 
     // Events
 
+    /**
+     * Sets a callback when left clicking on the entity
+     * @param {Function} callback the function to call back on left click
+     * @return {Entity} itself to be chainable
+     * @public
+     */
     onLeftClick(callback)
     {
         this._html.onclick = callback;
         return this;
     }
 
+    /**
+     * Sets a callback when right clicking on the entity
+     * @param {Function} callback the function to call back on right click
+     * @return {Entity} itself to be chainable
+     * @public
+     */
     onRightClick(callback)
     {
         this._html.oncontextmenu = callback;
         return this;
     }
 
+    /**
+     * Updates the entity
+     * @param {number} deltaTime time passed since the last frame in ms 
+     * @public
+     */
     update(deltaTime)
     {
-        for(const i in this.components)
-        {
-            this.components[i].update(this, deltaTime);
-        }
-        return this;
+        return;
     }
 
     // CSS update methods
@@ -296,9 +398,9 @@ class Entity
     // Utilities
 
     /**
-     * Add a child to this entity
-     *
+     * Adds a child to this entity
      * @param {Entity} child the child to add
+     * @return {Entity} itself to be chainable
      * @public
      */
     appendChild(child)
@@ -313,14 +415,15 @@ class Entity
         // add to the dom
         canvas._html.appendChild(child._html);
 
-        this._updateChildLocation(child, ZERO_VECTOR);
+        // TODO: fix why it is needed
+        child.moveBy(ZERO_VECTOR);
         return this;
     }
 
     /**
-     * Remove a previously added child from this entity
-     *
+     * Removes a child from this entity
      * @param {Entity} child the child to remove
+     * @return {Entity} itself to be chainable
      * @public
      */
     removeChild(child)
@@ -337,18 +440,7 @@ class Entity
     }
 
     /**
-     * update one child's world location
-     * @param {Entity} child the child to update
-     * @protected
-     */
-    _updateChildLocation(child, vec)
-    {
-        // moving the child automatically updates his own childrens
-        child.moveBy(vec);
-    }
-
-    /**
-     * Update all children's world location recursively
+     * Updates all children's location recursively
      * @param {Vector} vec distance to move all the children by
      * @protected
      */
@@ -356,40 +448,19 @@ class Entity
     {
         this.children.forEach(child =>
         {
-            this._updateChildLocation(child, vec);
+            child.moveBy(vec);
         });
     }
 
     /**
-     * Add a component to this entity
-     * @param {Component} component the component to add
-     * @public
-     */
-    addComponent(component)
-    {
-        this.components[component.name] = component;
-        component.init(this);
-        return this;
-    }
-
-    /**
-     * Removes the component with the given name
-     * @param {string} name name of the component to remove
-     */
-    removeComponent(name)
-    {
-        this.components[name] = undefined;
-        return this;
-    }
-
-    /**
-    * Get the distance with another entity
-    *
+    * Ges the distance from another entity
     * @param {Entity} entity the other entity
+    * @return {number} the distance in pixels from the other entity
     * @public
     */
     distanceFrom(entity)
     {
+        // TODO: use center
         return this.location.distance(entity.location);
     }
 }

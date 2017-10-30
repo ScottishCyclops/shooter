@@ -1,10 +1,7 @@
-"use strict"
-
 class Vector
 {
     /**
      * Vector - 2D vector class
-     *
      * @param {number} x value of the x axis
      * @param {number} y value of the y axis
      * @public
@@ -12,26 +9,26 @@ class Vector
     constructor(x, y)
     {
         /**
-         * @property {number} x the X axis
+         * @property {number} x the x axis
          * @readonly
          */
         this.x = x || 0;
 
         /**
-         * @property {number} y the Y axis
+         * @property {number} y the y axis
          * @readonly
          */
         this.y = y || 0;
     }
 
-    //Static
+    // Static
 
     /**
      * Creates a new instance from an array
-     *
      * @param {Array} arr array with the x and y values at index 0 and 1 respectively
      * @return {Vector} new vector
      * @public
+     * @static
      */
     fromArray(arr)
     {
@@ -40,10 +37,10 @@ class Vector
 
     /**
      * Creates a new instance from an object
-     *
      * @param {Object} obj object with the values for x and y
      * @return {Vector} new vector
      * @public
+     * @static
      */
     fromObject(obj)
     {
@@ -53,20 +50,21 @@ class Vector
     /**
      * Utility method returning vec if it is a vector
      * or otherwise a new vector from vec as x, and y
-     *
-     * @param {number} vec a vector or the x component of a vector
+     * @param {Vector} vec a vector or the x component of a vector
      * @param {number} y the y component of a vector or nothing
+     * @return {Vector} new vector
+     * @public
+     * @static
      */
     fromVecY(vec, y)
     {
         return vec instanceof Vector ? vec : new Vector(vec, y || 0);
     }
 
-    //Manipulation
+    // Manipulation
 
     /**
      * Adds a scalar to this vector's x axis
-     *
      * @param {number} x the other vector or scalar
      * @return {Vector} new vector
      * @public
@@ -78,7 +76,6 @@ class Vector
 
     /**
      * Adds a scalar to this vector's y axis
-     *
      * @param {number} y the other vector or scalar
      * @return {Vector} new vector
      * @public
@@ -90,8 +87,7 @@ class Vector
 
     /**
      * Adds another vector to this one or a scalar or an `x, y`
-     *
-     * @param {any} vec the other vector or scalar
+     * @param {Vector} vec the other vector or scalar
      * @param {number} y the y componant of the vector if given as `x, y`
      * @return {Vector} new vector
      * @public
@@ -114,7 +110,6 @@ class Vector
 
     /**
      * Subtracts a scalar from this vector's x axis
-     *
      * @param {number} x the other vector or scalar
      * @return {Vector} new vector
      * @public
@@ -126,7 +121,6 @@ class Vector
 
     /**
      * Subtracts a scalar from this vector's y axis
-     *
      * @param {number} y the other vector or scalar
      * @return {Vector} new vector
      * @public
@@ -138,8 +132,7 @@ class Vector
 
     /**
      * Subtracts another vector from this one or a scalar or an `x, y`
-     *
-     * @param {any} value the other vector or scalar
+     * @param {Vector} value the other vector or scalar
      * @param {number} y the y componant of the vector if given as `x, y`
      * @return {Vector} new vector
      * @public
@@ -162,7 +155,6 @@ class Vector
 
     /**
      * Divides this vector's x axis by a scalar
-     *
      * @param {number} x the other vector or scalar
      * @return {Vector} new vector
      * @public
@@ -174,7 +166,6 @@ class Vector
 
     /**
      * Divides this vector's x axis by a scalar
-     *
      * @param {number} y the other vector or scalar
      * @return {Vector} new vector
      * @public
@@ -186,8 +177,7 @@ class Vector
 
     /**
      * Divied another vector by this one or a scalar or an `x, y`
-     *
-     * @param {any} value the other vector or scalar
+     * @param {Vector} value the other vector or scalar
      * @param {number} y the y componant of the vector if given as `x, y`
      * @return {Vector} new vector
      * @public
@@ -210,7 +200,6 @@ class Vector
 
     /**
      * Multiplies this vector's x axis by a scalar
-     *
      * @param {number} x the other vector or scalar
      * @return {Vector} new vector
      * @public
@@ -222,7 +211,6 @@ class Vector
 
     /**
      * Multiplies this vector's y axis by a scalar
-     *
      * @param {number} y the other vector or scalar
      * @return {Vector} new vector
      * @public
@@ -234,8 +222,7 @@ class Vector
 
     /**
      * Multiplies another vector by this one or a scalar or an `x, y`
-     *
-     * @param {any} value the other vector or scalar
+     * @param {Vector} value the other vector or scalar
      * @param {number} y the y componant of the vector if given as `x, y`
      * @return {Vector} new vector
      * @public
@@ -257,8 +244,7 @@ class Vector
     }
 
     /**
-     * Inverts the X axis
-     *
+     * Inverts the x axis
      * @return {Vector} new vector
      * @public
      */
@@ -268,8 +254,7 @@ class Vector
     }
 
     /**
-     * Inverts the Y axis
-     *
+     * Inverts the y axis
      * @return {Vector} new vector
      * @public
      */
@@ -280,7 +265,6 @@ class Vector
 
     /**
      * Inverts both axis
-     *
      * @return {Vector} new vector
      * @public
      */
@@ -291,7 +275,6 @@ class Vector
 
     /**
      * Returns a unit vector
-     *
      * @return {Vector} new vector
      * @public
      */
@@ -339,8 +322,7 @@ class Vector
 
     /**
      * Rounds both axis to a certain precision
-     *
-     * @param {number} decimals the precision to round to
+     * @param {number} decimals the number of decimals points to leave
      * @return {Vector} new vector
      * @public
      */
@@ -350,8 +332,7 @@ class Vector
     }
 
     /**
-     * Performs a linear interpolation of the X axis towards another value
-     *
+     * Performs a linear interpolation of the x axis towards another value
      * @param {number} value the other value
      * @param {number} amount the blend amount
      * @return {Vector} new vector
@@ -359,12 +340,11 @@ class Vector
      */
     lerpX(value, amount)
     {
-        return new Vector((1 - amount) * this.x + amount * value, this.y);
+        return new Vector(lerp(this.x, value, amount), this.y);
     }
 
     /**
-     * Performs a linear interpolation of the Y axis towards another value
-     *
+     * Performs a linear interpolation of the y axis towards another value
      * @param {number} value the other value
      * @param {number} amount the blend amount
      * @return {Vector} new vector
@@ -372,27 +352,25 @@ class Vector
      */
     lerpY(value, amount)
     {
-        return new Vector(this.x, (1 - amount) * this.y + amount * value);
+        return new Vector(this.x, lerp(this.y,  value, amount));
     }
 
     /**
      * Performs a linear blend / interpolation towards another vector
-     *
-     * @param {Vector} vector the other vector
+     * @param {Vector} vec the other vector
      * @param {number} amount the blend amount
      * @return {Vector} new vector
      * @public
      */
-    lerp(vector, amount)
+    lerp(vec, amount)
     {
         return new Vector(
-            (1 - amount) * this.x + amount * value.x,
-            (1 - amount) * this.y + amount * value.y);
+            lerp(this.x, vec.x, amount),
+            lerp(this.y, vec.y, amount));
     }
 
     /**
      * Calculates the dot product of this vector and another
-     *
      * @param {Vector} vec the second vector
      * @return {number} dot product
      * @public
@@ -400,23 +378,21 @@ class Vector
     dot(vec)
     {
         return this.x * vec.x + this.y * vec.y;
-    };
+    }
 
     /**
      * Calculates the cross product of this vector and another
-     *
      * @param {Vector} vec the second vector
      * @return {number} cross product
      * @public
      */
     cross(vec)
     {
-        return (this.x * vec.y) - (this.y * vec.x);
+        return this.x * vec.y - this.y * vec.x;
     }
 
     /**
-     * Returns the direction of the vector
-     *
+     * Returns the direction / horizontal angle of the vector
      * @return {number} the horizontal angle
      * @public
      */
@@ -427,7 +403,6 @@ class Vector
 
     /**
      * Returns the vertical angle of the vector
-     *
      * @return {number} the vertical angle
      * @public
      */
@@ -436,9 +411,9 @@ class Vector
         return Math.atan2(this.x, this.y);
     }
 
+    // TODO: sort out rotation stuff
     /**
-     * Rotates the vector
-     *
+     * Rotates the vector by the given angle
      * @param {number} angle the angle of rotation in radians
      * @return {Vector} new vector
      * @public
@@ -453,7 +428,6 @@ class Vector
 
     /**
      * Rotates the vector to a certain angle
-     *
      * @param {number} angle the angle of rotation in radians
      * @return {Vector} new vector
      * @public
@@ -465,7 +439,6 @@ class Vector
 
     /**
      * Rotates the vector by a certain angle
-     *
      * @param {number} angle the angle of rotation in radians
      * @return {Vector} new vector
      * @public
@@ -476,32 +449,29 @@ class Vector
     }
 
     /**
-     * Calculates the distance of the X axis between this vector and another
-     *
-     * @param {Vector} vec the second vector
+     * Calculates the distance between the x avis and a value
+     * @param {number} x the other value
      * @return {number} the distance
      * @public
      */
-    distanceX(vec)
+    distanceX(x)
     {
-        return Math.abs(this.x - vec.x);
+        return Math.abs(this.x - x);
     }
 
     /**
-     * Calculates the distance of the Y axis between this vector and another
-     *
-     * @param {Vector} vec the second vector
+     * Calculates the distance between the y avis and a value
+     * @param {number} y the other value
      * @return {number} the distance
      * @public
      */
-    distanceY(vec)
+    distanceY(y)
     {
-        return Math.abs(this.y - vec.y);
+        return Math.abs(this.y - y);
     }
 
     /**
      * Calculates the euclidean distance between this vector and another
-     *
      * @param {Vector} vec the second vector
      * @return {number} the distance
      * @public
@@ -515,9 +485,8 @@ class Vector
     }
 
     /**
-     * Calculates the length (magnitude) of the vector
-     *
-     * @return {number} the length (magnitude)
+     * Calculates the length / magnitude of the vector
+     * @return {number} the length / magnitude
      * @public
      */
     length()
@@ -526,9 +495,9 @@ class Vector
     }
 
     /**
-     * Sets the length (magnitude) of the vector
-     * @param {number} length the new length of the vector (magnitude)
-     * @return {Vector} a new vector with the given length
+     * Sets the length / magnitude of the vector
+     * @param {number} length the new length of the vector
+     * @return {Vector} new vector
      * @public
      */
     setLength(length)
@@ -658,7 +627,6 @@ class Vector
 
     /**
      * Returns a true if this vector is the same as another
-     *
      * @param {Vector} vec the vector to compare
      * @return {boolean} true if vectors are identical
      * @public
@@ -669,12 +637,7 @@ class Vector
     }
 
     /**
-     * # Utility Methods
-     */
-
-    /**
-     * Returns an string representation of the vector
-     *
+     * Returns a string representation of the vector
      * @return {string} a string representation of the vector
      * @public
      */
@@ -684,8 +647,7 @@ class Vector
     }
 
     /**
-     * Returns a CSS String with the given suffix
-     *
+     * Returns a CSS string with the given suffix ex: `(10px, 20px)`
      * @param {string} suffix the suffix for each value
      * @return {string} a CSS string representation of the vector
      * @public
@@ -698,8 +660,7 @@ class Vector
 
     /**
      * Returns an array representation of the vector
-     *
-     * @return {Array} array containing x at index 0 and y at index 1
+     * @return {number[]} array containing x at index 0 and y at index 1
      * @public
      */
     toArray()
@@ -709,8 +670,7 @@ class Vector
 
     /**
      * Returns an object representation of the vector
-     *
-     * @return {Object} an object with x and y keys
+     * @return {any} an object with x and y keys
      * @public
      */
     toObject()
@@ -719,5 +679,6 @@ class Vector
     }
 }
 
+// basic vectors
 const ZERO_VECTOR = new Vector(0, 0);
 const ONE_VECTOR = new Vector(1, 1);

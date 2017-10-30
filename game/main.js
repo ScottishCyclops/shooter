@@ -1,10 +1,9 @@
+"use strict"
+
 let transition = null;
 let transitionTimout = null;
 
-let world, camera, player;
-let box1, box2;
-
-let dataBox;
+let world, camera, player, background, dataBox;
 
 let currentDirection = "NONE";
 
@@ -14,9 +13,24 @@ function setup()
 {
     canvas.setColor("#222");
 
-    dataBox = new TextEntity(innerWidth / 2, 10, {color: "white", family: "monospace", size: 20});
     world = new Container;
     camera = new Container;
+
+    background = new Background(innerWidth / -2, innerHeight / -2,
+    {
+        sprite: "res/background1.png",
+        width: innerWidth * 1.5,
+        height: innerHeight * 1.5,
+        distanceDivider: 5
+    });
+
+    dataBox = new TextEntity(innerWidth / 2, 10,
+    {
+        color: "white",
+        family: "monospace",
+        size: 20,
+        depth: 30
+    });
 
     player = new Actor(innerWidth / 2, innerHeight / 2,
     {
@@ -37,7 +51,8 @@ function setup()
         walkingSpeed: 3
     });
 
-    camera.appendChild(world).appendChild(player);
+    // TODO: append background to world
+    camera.appendChild(world).appendChild(player).appendChild(background);
     canvas.appendChild(camera).appendChild(dataBox);
 
     createWorld();
@@ -154,9 +169,10 @@ function changedDirection()
 
 function createWorld()
 {
-    const box1 = new Entity(0, 200, {width: 300, height: 200, color: "#888", useCollisions: true});
-    const box2 = new Entity(30, innerHeight - 400, {width: 30, height: 200, color: "#542", useCollisions: true});
-    const box3 = new Entity(900, innerHeight - 400, {width: 30, height: 200, color: "#333", useCollisions: true});
-    const box4 = new Entity(-1000, innerHeight - 200, {width: 2000, height: 200, color: "#DDD", useCollisions: true});
-    world.appendChild(box1).appendChild(box2).appendChild(box3).appendChild(box4);
+    const core = new Entity(-2000, innerHeight, {width: 4000, height: 500, color: "red", useCollisions: true});
+    const rock1 = new Entity(-2000, innerHeight - 400, {width: 2000, height: 400, color: "grey", useCollisions: true});
+    const rock2 = new Entity(300, innerHeight - 500, {width: 1700, height: 350, color: "grey", useCollisions: true});
+    const dirt1 = new Entity(-2000, innerHeight - 900, {width: 1000, height: 500, color: "green", useCollisions: true});
+    const dirt2 = new Entity(-750, innerHeight - 900, {width: 2250, height: 350, color: "green", useCollisions: true});
+    world.appendChild(core).appendChild(rock1).appendChild(rock2).appendChild(dirt1).appendChild(dirt2);
 }
