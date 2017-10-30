@@ -13,11 +13,8 @@ class MovingEntity extends Entity
     {
         super(locX, locY, extras);
 
-        // physics
-
         this.velocity =     ZERO_VECTOR;
         this.acceleration = ZERO_VECTOR;
-        // this.acceleration = ZERO_VECTOR;
 
         this.left =      false;
         this.wasLeft =   false;
@@ -41,85 +38,77 @@ class MovingEntity extends Entity
         this.wasTop =    this.top;
         this.wasBottom = this.bottom;
 
-        //add gravity
-        this.acceleration = this.acceleration.addY(GRAVITY * meter * deltaTime * deltaTime);
-
         //proactive collision detection
         //this is the location we are going to be to next frame
 
-        let wouldCollide = false;
-        const newLocation = this.location.add(this.velocity);
+        let newLocation = this.location.add(this.velocity);
 
         if(!this.velocity.isZero())
         {
+
+            this.top = false;
+            this.right = false;
+            this.bottom = false;
+            this.left = false;
+
             //check for a collision
             for(let i = 0; i < entities.length; i++)
             {
-                //ignore self collision
-                if(entities[i] === this)
+                // ignore self collision
+                if(entities[i] === this) continue;
+
+                if(!entities[i].useCollisions) continue;
+
+                const side = getCollisionSide(
+                    newLocation,
+                    this.getDimensions(),
+                    entities[i].location,
+                    entities[i].getDimensions());
+
+                // continue of no collision
+                if(side === collisionSides.NONE) continue;
+
+                if(side === collisionSides.TOP)
                 {
-                    continue;
+                    this.top = true;
+                    this.velocity = this.velocity.minY(0);
+                    this.acceleration = this.acceleration.minY(0);
+
+                    // move the max that we can
+                    newLocation = newLocation.setY(entities[i].location.y + entities[i].height);
                 }
-
-                //if collision is enabled
-                if(entities[i].useCollisions)
+                else if(side === collisionSides.RIGHT)
                 {
-                    if(
-                        overlaps(newLocation,
-                        this.getDimensions(),
-                        entities[i].location,
-                        entities[i].getDimensions())
-                    )
-                    {
-                        console.log("collision");
+                    this.right = true;
+                    this.velocity = this.velocity.maxX(0);
+                    this.acceleration = this.acceleration.maxX(0);
 
-                        // check the side from which we collide, using the original
-                        // location
-                        /*
-                        if(this.location.y > entities[i].location.y)
-                        {
-                            // below
-                            this.top = true;
-                        }
-                        else if(this.location.y + this.height < entities[i].location.y + entities[i].height)
-                        {
-                            // above
-                            this.bottom = true;
-                        }
+                    newLocation = newLocation.setX(entities[i].location.x - this.width);
+                }
+                else if(side === collisionSides.BOTTOM)
+                {
+                    this.bottom = true;
+                    this.velocity = this.velocity.maxY(0);
+                    this.acceleration = this.acceleration.maxY(0);
 
-                        if(this.location.x )
-                        */
+                    newLocation = newLocation.setY(entities[i].location.y - this.height);
+                }
+                else if(side === collisionSides.LEFT)
+                {
+                    this.left = true;
+                    this.velocity = this.velocity.minX(0);
+                    this.acceleration = this.acceleration.minX(0);
 
-                        // TODO: handle collision from all sides. return value from overlaps ?
-                        this.bottom = true;
-                        this.velocity = this.velocity.setY(0);
-                        wouldCollide = true;
-                        break;
-                    }
+                    newLocation = newLocation.setX(entities[i].location.x + entities[i].width);
                 }
             }
         }
 
-        if(!wouldCollide)
-        {
-            // if the new location won't make us collide, we move to it
-            this.moveTo(newLocation);
-            this.velocity = this.velocity.add(this.acceleration).limit(TERMINAL_VELOCITY * deltaTime);
-        }
-        /*
-        else
-        {
-            // TODO: move as far as possible
+        const diff = this.location.subtract(newLocation);
+        world.moveBy(diff);
 
-            // this._velocity = new Vector(0, 0);
-            this._velocity = this._velocity.invert().multiply(0.3);
-            this.velocity = ZERO_VECTOR;
-        }
-        */
-
-        // in any case
+        this.velocity = this.velocity.add(this.acceleration).multiply(1 - DRAG).setPrecision(1);
         this.acceleration = ZERO_VECTOR;
-        this.velocity = this.velocity.multiply(1 - DRAG);
     }
 }
 
@@ -137,43 +126,83 @@ class Actor extends MovingEntity
          */
         this.walkingSpeed = extras.walkingSpeed || kmhToMms(60);
         this.climbingSpeed = extras.climbingSpeed || 5;
-        this.jumpForce = extras.jumpForce || 100;
+        this.jumpForce = extras.jumpForce || 5;
+        this.maxJumpPressingTime = extras.maxJumpPressingTime || 1000;
+        this.inputs = extras.inputs || {};
 
-        this.inputs = extras.inputs ||
-        {
-            LEFT:  "a",
-            RIGHT: "d",
-            UP:    "w",
-            DOWN:  "s",
-            JUMP:  " "
-        };
-
-        this.state = actorState.STILL;
+        this.state = actorState.JUMP;
+        this.jumpPressingTime = this.maxJumpPressingTime;
+        this.jumping = false;
     }
 
     update(deltaTime)
     {
-        /*
-        const leftDown = isDown(this.inputs.LEFT);
-        const rightDown = isDown(this.inputs.RIGHT);
+        this.velocity = this.velocity.maxX(this.walkingSpeed).minX(-this.walkingSpeed);
 
-        if(leftDown !== rightDown)
+        super.update(deltaTime);
+        this.updatePhysics(deltaTime);
+
+        if(!isDown(this.inputs.JUMP) || this.jumpPressingTime <= 0 || this.top || this.bottom)
         {
-            if(leftDown)
+            this.jumping = false;
+            this.jumpPressingTime = this.maxJumpPressingTime;
+        }
+
+        if(currentDirection !== "NONE")
+        {
+            if(this.bottom)
             {
-                this.moveBy(-0.4, 0);
-                // this.velocity = new Vector(-this.walkingSpeed, 0);
+                this.setSprite("res/spaceguy/walk.gif");
+            }
+
+            if(currentDirection === "LEFT")
+            {
+                // don't add if we are already going at max speed
+                // note: real max speed will be 2x walkingSpeed
+                this.addForce(new Vector(-this.walkingSpeed * deltaTime, 0));
             }
             else
             {
-                this.moveBy(0.6, 0);
-                // this.velocity = new Vector(this.walkingSpeed, 0);
+                this.addForce(new Vector(this.walkingSpeed * deltaTime, 0));
             }
         }
-        */
+        else
+        {
+            if(this.bottom)
+            {
+                this.setSprite("res/spaceguy/still.gif");
+            }
+        }
+
+        if(this.bottom)
+        {
+            if(isDown(this.inputs.JUMP) && !this.jumping)
+            {
+                this.jumping = true;
+                this.acceleration = this.acceleration.addY(-this.jumpForce / 2);
+                this.setSprite("res/spaceguy/jump.gif?+Math.random()");
+            }
+        }
+        else
+        {
+            this.acceleration = this.acceleration.addY(GRAVITY * meter * deltaTime / 2);
+        }
+
+        if(this.bottom && !this.wasBottom)
+        {
+            this.setSprite("res/spaceguy/land.gif");
+        }
+
+        if(this.jumping)
+        {
+            // console.log(this.jumpPressingTime / this.maxJumpPressingTime * HALF_PI, "      ", (this.jumpPressingTime / this.maxJumpPressingTime));
+            this.acceleration = this.acceleration.addY(-this.jumpForce *  (this.jumpPressingTime / this.maxJumpPressingTime));
+            this.jumpPressingTime -= deltaTime;
+            this.setSprite("res/spaceguy/jump.gif");
+            // console.log(this.acceleration);
+        }
 
         /*
-
         switch(this.state)
         {
             case actorState.STILL:
@@ -186,7 +215,7 @@ class Actor extends MovingEntity
                     this.state = actorState.JUMP;
                 }
                 // if one is pressed but not both
-                else if(isDown(this.inputs.LEFT) !== isDown(this.inputs.RIGHT))
+                else if(isDown(this.inputs.LEFT) || isDown(this.inputs.RIGHT))
                 {
                     this.state = actorState.WALK;
                 }
@@ -292,9 +321,7 @@ class Actor extends MovingEntity
         }
         */
 
-        super.update(deltaTime);
-        this.updatePhysics(deltaTime);
-
+        /*
         if(this.left && !this.wasLeft
             || this.right && !this.wasRight
             || this.top && !this.wasTop
@@ -303,6 +330,12 @@ class Actor extends MovingEntity
             // TODO: play hit sound
             console.log("hit");
         }
+        */
+
+        if(this.top && !this.wasTop) console.log("top");
+        if(this.right && !this.wasRight) console.log("right");
+        if(this.bottom && !this.wasBottom) console.log("bottom");
+        if(this.left && !this.wasLeft) console.log("left");
     }
 }
 

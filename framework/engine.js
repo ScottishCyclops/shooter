@@ -14,12 +14,6 @@ const startTime = Date.now();
 let mouseX = 0, mouseY = 0;
 let mousePos = new Vector(0, 0);
 
-const currentDirections =
-{
-    HORIZONTAL: "NONE",
-    VERTICAL: "NONE",
-};
-
 const UP_VECTOR = new Vector(0, -1);
 const DOWN_VECTOR = new Vector(0, 1);
 const LEFT_VECTOR = new Vector(-1, 0);
@@ -107,37 +101,6 @@ window.onload = () =>
             keysDown.push(key);
         }
 
-        /*
-        const oldDirection = currentDirections.HORIZONTAL;
-
-        if(key === directionKeys.LEFT)
-        {
-            currentDirections.HORIZONTAL = "LEFT";
-        }
-        if(key === directionKeys.RIGHT)
-        {
-            currentDirections.HORIZONTAL = "RIGHT";
-        }
-
-        if(currentDirections.HORIZONTAL !== oldDirection)
-        {
-
-            if(typeof changedDirection === "function")
-            {
-                changedDirection();
-            }
-        }
-
-        if(key === directionKeys.UP)
-        {
-            currentDirections.VERTICAL = "UP";
-        }
-        if(key === directionKeys.DOWN)
-        {
-            currentDirections.VERTICAL = "DOWN";
-        }
-        */
-
         if(inputEvents[key] !== undefined)
         {
             if(!inputEvents[key].release)
@@ -146,10 +109,9 @@ window.onload = () =>
             }
         }
 
-
         if(typeof keyDownEvent === "function")
         {
-            if(keyDownEvent(e))
+            if(keyDownEvent(key))
             {
                 return false;
             }
@@ -166,66 +128,6 @@ window.onload = () =>
             keysDown.splice(index, 1);
         }
 
-        /*
-        const oldDirection = currentDirections.HORIZONTAL;
-
-
-        if(key === directionKeys.LEFT)
-        {
-            if(!isDown(directionKeys.RIGHT))
-            {
-                currentDirections.HORIZONTAL = "NONE";
-            }
-            else
-            {
-                currentDirections.HORIZONTAL = "RIGHT";
-            }
-        }
-        if(key === directionKeys.RIGHT)
-        {
-            if(!isDown(directionKeys.LEFT))
-            {
-                currentDirections.HORIZONTAL = "NONE";
-            }
-            else
-            {
-                currentDirections.HORIZONTAL = "LEFT";
-            }
-        }
-
-        if(currentDirections.HORIZONTAL !== oldDirection)
-        {
-
-            if(typeof changedDirection === "function")
-            {
-                changedDirection();
-            }
-        }
-
-        if(key === directionKeys.UP)
-        {
-            if(!isDown(directionKeys.DOWN))
-            {
-                currentDirections.VERTICAL = "NONE";
-            }
-            else
-            {
-                currentDirections.VERTICAL = "DOWN";
-            }
-        }
-        if(key === directionKeys.DOWN)
-        {
-            if(!isDown(directionKeys.UP))
-            {
-                currentDirections.VERTICAL = "NONE";
-            }
-            else
-            {
-                currentDirections.VERTICAL = "UP";
-            }
-        }
-        */
-
         if(inputEvents[key] !== undefined)
         {
             if(inputEvents[key].release)
@@ -236,7 +138,7 @@ window.onload = () =>
 
         if(typeof keyUpEvent === "function")
         {
-            if(keyUpEvent(e))
+            if(keyUpEvent(key))
             {
                 return false;
             }

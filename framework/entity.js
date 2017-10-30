@@ -222,6 +222,16 @@ class Entity
         return new Vector(this.width, this.height);
     }
 
+    getCenterX()
+    {
+        return this.location.x + this.width / 2;
+    }
+
+    getCenterY()
+    {
+        return this.location.y + this.height / 2;
+    }
+
     // Events
 
     onLeftClick(callback)

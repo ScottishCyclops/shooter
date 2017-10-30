@@ -65,27 +65,27 @@ class Vector
     //Manipulation
 
     /**
-     * Adds another vector's X axis to this one or a scalar
+     * Adds a scalar to this vector's x axis
      *
-     * @param {any} value the other vector or scalar
+     * @param {number} x the other vector or scalar
      * @return {Vector} new vector
      * @public
      */
-    addX(value)
+    addX(x)
     {
-        return new Vector(this.x + value instanceof Vector ? value.x : value, this.y);
+        return new Vector(this.x + x, this.y);
     }
 
     /**
-     * Adds another vector's Y axis to this one or a scalar
+     * Adds a scalar to this vector's y axis
      *
-     * @param {any} value the other vector or scalar
+     * @param {number} y the other vector or scalar
      * @return {Vector} new vector
      * @public
      */
-    addY(value)
+    addY(y)
     {
-        return new Vector(this.x, this.y + value instanceof Vector ? value.y : value);
+        return new Vector(this.x, this.y + y);
     }
 
     /**
@@ -113,27 +113,27 @@ class Vector
     }
 
     /**
-     * Subtracts the X axis of another vector from this one or a scalar
+     * Subtracts a scalar from this vector's x axis
      *
-     * @param {any} value the other vector or scalar
+     * @param {number} x the other vector or scalar
      * @return {Vector} new vector
      * @public
      */
-    subtractX(value)
+    subtractX(x)
     {
-        return new Vector(this.x - value instanceof Vector ? value.x : value, this.y);
+        return new Vector(this.x - x, this.y);
     }
 
     /**
-     * Subtracts the Y axis of another vector from this one
+     * Subtracts a scalar from this vector's y axis
      *
-     * @param {any} value the other vector or scalar
+     * @param {number} y the other vector or scalar
      * @return {Vector} new vector
      * @public
      */
-    subtractY(value)
+    subtractY(y)
     {
-        return new Vector(this.x, this.y - value instanceof Vector ? value.y : value);
+        return new Vector(this.x, this.y - y);
     }
 
     /**
@@ -161,27 +161,27 @@ class Vector
     }
 
     /**
-     * Divides the X axis by the x component of given vector or scalar
+     * Divides this vector's x axis by a scalar
      *
-     * @param {any} value the other vector or scalar
+     * @param {number} x the other vector or scalar
      * @return {Vector} new vector
      * @public
      */
-    divideX(value)
+    divideX(x)
     {
-        return new Vector(this.x / value instanceof Vector ? value.x : value, this.y);
+        return new Vector(this.x / x, this.y);
     }
 
     /**
-     * Divides the y axis by the y component of given vector or scalar
+     * Divides this vector's x axis by a scalar
      *
-     * @param {any} value the other vector or scalar
+     * @param {number} y the other vector or scalar
      * @return {Vector} new vector
      * @public
      */
-    divideY(value)
+    divideY(y)
     {
-        return new Vector(this.x, this.y / value instanceof Vector ? value.y : value);
+        return new Vector(this.x, this.y / y);
     }
 
     /**
@@ -209,27 +209,27 @@ class Vector
     }
 
     /**
-     * Multiply the X axis by the x component of given vector or scalar
+     * Multiplies this vector's x axis by a scalar
      *
-     * @param {any} value the other vector or scalar
+     * @param {number} x the other vector or scalar
      * @return {Vector} new vector
      * @public
      */
-    multiplyX(value)
+    multiplyX(x)
     {
-        return new Vector(this.x * value instanceof Vector ? value.x : value, this.y);
+        return new Vector(this.x * x, this.y);
     }
 
     /**
-     * Multiply the y axis by the y component of given vector or scalar
+     * Multiplies this vector's y axis by a scalar
      *
-     * @param {any} value the other vector or scalar
+     * @param {number} y the other vector or scalar
      * @return {Vector} new vector
      * @public
      */
-    multiplyY(value)
+    multiplyY(y)
     {
-        return new Vector(this.x, this.y * value instanceof Vector ? value.y : value);
+        return new Vector(this.x, this.y * y);
     }
 
     /**
@@ -264,7 +264,7 @@ class Vector
      */
     invertX()
     {
-        return new Vector(this.x * -1, this.y);
+        return new Vector(-this.x, this.y);
     }
 
     /**
@@ -275,7 +275,7 @@ class Vector
      */
     invertY()
     {
-        return new Vector(this.x, this.y * -1);
+        return new Vector(this.x, -this.y);
     }
 
     /**
@@ -286,7 +286,7 @@ class Vector
      */
     invert()
     {
-        return new Vector(this.x * -1, this.y * -1);
+        return new Vector(-this.x, -this.y);
     }
 
     /**
@@ -304,7 +304,7 @@ class Vector
             return new Vector(1, 0);
         }
 
-        return this.divide(length);
+        return new Vector(this.x / length, this.y / length);
     }
 
     /**
@@ -324,7 +324,6 @@ class Vector
      */
     floor()
     {
-        console.log(this.x);
         return new Vector(Math.floor(this.x), Math.floor(this.y));
     }
 
@@ -341,59 +340,54 @@ class Vector
     /**
      * Rounds both axis to a certain precision
      *
-     * @param {number} precision the precision to round to
+     * @param {number} decimals the precision to round to
      * @return {Vector} new vector
      * @public
      */
-    toFixed(precision)
+    setPrecision(decimals)
     {
-        if(precision === undefined)
-        {
-            return this;
-        }
-
-        return new Vector(this.x.toFixed(precision), this.y.toFixed(precision));
+        return new Vector(setPrecision(this.x, decimals), setPrecision(this.y, decimals));
     }
 
     /**
-     * Performs a linear interpolation of the X axis towards another vector or scalar
+     * Performs a linear interpolation of the X axis towards another value
      *
-     * @param {any} value the other vector or scalar
+     * @param {number} value the other value
      * @param {number} amount the blend amount
      * @return {Vector} new vector
      * @public
      */
     lerpX(value, amount)
     {
-        return new Vector((1 - amount) * this.x + amount * value instanceof Vector ? value.x : value, this.y);
+        return new Vector((1 - amount) * this.x + amount * value, this.y);
     }
 
     /**
-     * Performs a linear interpolation of the Y axis towards another vector or scalar
+     * Performs a linear interpolation of the Y axis towards another value
      *
-     * @param {any} value the other vector or scalar
+     * @param {number} value the other value
      * @param {number} amount the blend amount
      * @return {Vector} new vector
      * @public
      */
     lerpY(value, amount)
     {
-        return new Vector(this.x, (1 - amount) * this.y + amount * value instanceof Vector ? value.y : value);
+        return new Vector(this.x, (1 - amount) * this.y + amount * value);
     }
 
     /**
-     * Performs a linear blend / interpolation towards another vector or scalar
+     * Performs a linear blend / interpolation towards another vector
      *
-     * @param {any} value the other vector or scalar
+     * @param {Vector} vector the other vector
      * @param {number} amount the blend amount
      * @return {Vector} new vector
      * @public
      */
-    lerp(value, amount)
+    lerp(vector, amount)
     {
         return new Vector(
-            (1 - amount) * this.x + amount * value instanceof Vector ? value.x : value,
-            (1 - amount) * this.y + amount * value instanceof Vector ? value.y : value);
+            (1 - amount) * this.x + amount * value.x,
+            (1 - amount) * this.y + amount * value.y);
     }
 
     /**
@@ -544,11 +538,11 @@ class Vector
 
     /**
      * If the vector's x component is greater than max, sets it to max
-     * @param {number} max the maximum length of the x component
+     * @param {number} max the maximum value of the x component
      * @return {Vector} a vector with max as maximum length for x
      * @public
      */
-    limitX(max)
+    maxX(max)
     {
         if(this.x > max)
         {
@@ -560,15 +554,47 @@ class Vector
 
     /**
      * If the vector's y component is greater than max, sets it to max
-     * @param {number} max the maximum length of the y component
+     * @param {number} max the maximum value of the y component
      * @return {Vector} a vector with max as maximum length for y
      * @public
      */
-    limitY(max)
+    maxY(max)
     {
         if(this.y > max)
         {
             return new Vector(this.x, max);
+        }
+
+        return this;
+    }
+
+    /**
+     * If the vector's x component is lesser than min, sets it to min
+     * @param {number} min the minimum value of the x component
+     * @return {Vector} a vector with min as minimum length for x
+     * @public
+     */
+    minX(min)
+    {
+        if(this.x < min)
+        {
+            return new Vector(min, this.y);
+        }
+
+        return this;
+    }
+
+    /**
+     * If the vector's y component is lesser than min, sets it to min
+     * @param {number} min the minimum value of the y component
+     * @return {Vector} a vector with min as minimum length for y
+     * @public
+     */
+    minY(min)
+    {
+        if(this.y < min)
+        {
+            return new Vector(this.x, min);
         }
 
         return this;
