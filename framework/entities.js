@@ -126,7 +126,7 @@ class Actor extends MovingEntity
          */
         this.walkingSpeed = extras.walkingSpeed || kmhToMms(60);
         this.climbingSpeed = extras.climbingSpeed || 5;
-        this.jumpForce = extras.jumpForce || 5;
+        this.jumpForce = extras.jumpForce || 0.3;
         this.maxJumpPressingTime = extras.maxJumpPressingTime || 1000;
         this.inputs = extras.inputs || {};
 
@@ -179,13 +179,13 @@ class Actor extends MovingEntity
             if(isDown(this.inputs.JUMP) && !this.jumping)
             {
                 this.jumping = true;
-                this.acceleration = this.acceleration.addY(-this.jumpForce / 2);
+                this.acceleration = this.acceleration.addY(-this.jumpForce * deltaTime / 2);
                 this.setSprite("res/spaceguy/jump.gif?+Math.random()");
             }
         }
         else
         {
-            this.acceleration = this.acceleration.addY(GRAVITY * meter * deltaTime / 2);
+            this.acceleration = this.acceleration.addY(GRAVITY * meter * deltaTime / 4);
         }
 
         if(this.bottom && !this.wasBottom)
@@ -196,7 +196,7 @@ class Actor extends MovingEntity
         if(this.jumping)
         {
             // console.log(this.jumpPressingTime / this.maxJumpPressingTime * HALF_PI, "      ", (this.jumpPressingTime / this.maxJumpPressingTime));
-            this.acceleration = this.acceleration.addY(-this.jumpForce *  (this.jumpPressingTime / this.maxJumpPressingTime));
+            this.acceleration = this.acceleration.addY(-this.jumpForce * deltaTime * (this.jumpPressingTime / this.maxJumpPressingTime));
             this.jumpPressingTime -= deltaTime;
             this.setSprite("res/spaceguy/jump.gif");
             // console.log(this.acceleration);
