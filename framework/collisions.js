@@ -56,16 +56,16 @@ function getCollisionSide(loc1, dim1, loc2, dim2)
         const wy = w * dy;
         const hx = h * dx;
 
-        const wxGtHx = wy > -hx;
+        const wyGtHx = wy > -hx;
 
         if(wy > hx)
         {
-            if(wxGtHx) return collisionSides.TOP;
+            if(wyGtHx) return collisionSides.TOP;
             else return collisionSides.RIGHT;
         }
         else
         {
-            if(wxGtHx) return collisionSides.LEFT;
+            if(wyGtHx) return collisionSides.LEFT;
             else return collisionSides.BOTTOM;
         }
     }

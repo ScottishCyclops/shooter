@@ -2,7 +2,6 @@ class Actor extends MovingEntity
 {
     /**
     * Actor - Class of the main character
-    *
     * @param {number} locX the x position in the world of the entity
     * @param {number} locY the y position in the world of the entity
     * @param {any} extras any extra parameters
