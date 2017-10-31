@@ -1,0 +1,101 @@
+{
+    "entities":
+    [
+        {
+            "locX": -2000,
+            "locY": 2000,
+            "extras":
+            {
+                "width": 4000,
+                "height": 400,
+                "color": "#333",
+                "useCollisions": true
+            }
+        },
+        {
+            "locX": -2000,
+            "locY": 1800,
+            "extras":
+            {
+                "width": 4000,
+                "height": 200,
+                "color": "#666",
+                "useCollisions": true
+            }
+        },
+        {
+            "locX": -2000,
+            "locY": 1500,
+            "extras":
+            {
+                "width": 3000,
+                "height": 300,
+                "color": "#888",
+                "useCollisions": true
+            }
+        },
+        {
+            "locX": 1500,
+            "locY": 1500,
+            "extras":
+            {
+                "width": 500,
+                "height": 300,
+                "color": "#888",
+                "useCollisions": true
+            }
+        },
+        {
+            "locX": 1080,
+            "locY": 1500,
+            "extras":
+            {
+                "width": 500,
+                "height": 32,
+                "color": "#888",
+                "useCollisions": true
+            }
+        },
+        {
+            "locX": -2000,
+            "locY": 1300,
+            "extras":
+            {
+                "width": 2000,
+                "height": 200,
+                "color": "#555",
+                "useCollisions": true
+            }
+        }
+    ],
+    "ladders":
+    [
+        {
+            "locX": 1000,
+            "locY": 1500,
+            "extras":
+            {
+                "width": 80,
+                "height": 300,
+                "depth": -1,
+                "sprite": "res/ladder.png",
+                "spriteSize": "100%"
+            }
+        }
+    ],
+    "backgrounds":
+    [
+        {
+            "locX": -1500,
+            "locY": -200,
+            "extras":
+            {
+                "width": 3000,
+                "height": 2000,
+                "sprite": "res/background1.png",
+                "distanceDivider": 2,
+                "depth": -1
+            }
+        }
+    ]
+}

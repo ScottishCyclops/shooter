@@ -72,6 +72,12 @@ class Entity
         this.sprite = extras.sprite || "";
 
         /**
+         * @property {string} spriteSize the CSS sizing of the background image
+         * @readonly
+         */
+        this.spriteSize = extras.spriteSize || "cover";
+
+        /**
          * @property {Entity[]} children this entity's children
          * @readonly
          */
@@ -87,7 +93,6 @@ class Entity
         this._html.style.position = "absolute";
         this._html.style.top = 0;
         this._html.style.left = 0;
-        this._html.style.backgroundSize = "cover";
         this._html.style.overflow = "initial";
 
         this._updateTransform();
@@ -97,6 +102,7 @@ class Entity
         this._updateDepth();
         this._updateColor();
         this._updateBackground();
+        this._updateBackgroundSize();
 
         // auto registering
         if(extras.register || extras.useCollisions)
@@ -251,6 +257,16 @@ class Entity
     setUseCollisions(useCollisions)
     {
         this.useCollisions = useCollisions;
+
+        if(this.useCollisions)
+        {
+            registerObject(this);
+        }
+        else
+        {
+            unregisterObject(this);
+        }
+
         return this;
     }
 
@@ -290,6 +306,17 @@ class Entity
     {
         this.sprite = sprite;
         this._updateBackground();
+        return this;
+    }
+
+    /**
+     * Sets the CSS sizing of the sprite. default: cover
+     * @param {string} size a valid CSS representation of the size
+     */
+    setSpriteSize(size)
+    {
+        this.spriteSize = size;
+        this._updateBackgroundSize();
         return this;
     }
 
@@ -396,6 +423,11 @@ class Entity
     _updateBackground()
     {
         this._html.style.backgroundImage = `url(${this.sprite})`;
+    }
+
+    _updateBackgroundSize()
+    {
+        this._html.style.backgroundSize = this.spriteSize;
     }
 
     // Utilities

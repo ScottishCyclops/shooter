@@ -4,7 +4,7 @@ const startTime = Date.now();
 let loopHandle = undefined;
 let loopFunction = undefined;
 let looping = false;
-let mousePos = ZERO_VECTOR
+let mousePos = ZERO_VECTOR;
 let canvas = null;
 let timeDivider = 1;
 
@@ -138,13 +138,33 @@ window.onload = () =>
 // Helpers
 
 /**
- * Stop the update looping
+ * Stops the update looping
  */
-function noLoop()
+function pause()
 {
-    looping = false;
+
+    if(!looping)
+    {
+        return;
+    }
+
     clearInterval(loopHandle);
     loopHandle = null;
+    looping = false;
+}
+
+/**
+ * Continues the update looping
+ */
+function play()
+{
+    if(looping)
+    {
+        return;
+    }
+
+    loopHandle = setInterval(loopFunction, 0);
+    looping = true;
 }
 
 /**
@@ -198,8 +218,11 @@ function wasPressedBefore(key1, key2)
     return  index1 === -1 ? 999 : index1 < index2 === -1 ? 999 : index2;
 }
 
+// TODO: remove time spent in pause
 /**
  * Returns the current time in milliseconds since the program started
+ *
+ * Time spent in pause is not removed
  * @return {number} the number of milliseconds
  */
 function millis()

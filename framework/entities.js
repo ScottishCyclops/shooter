@@ -118,7 +118,6 @@ class MovingEntity extends Entity
         const diff = this.location.subtract(newLocation);
         // TOOD: remove global var use
         world.moveBy(diff);
-        background.moveBy(diff);
 
         // set precision to avoid super small values
         this.velocity = this.velocity.add(this.acceleration).multiply(1 - DRAG).setPrecision(1);

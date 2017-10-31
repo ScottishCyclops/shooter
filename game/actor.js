@@ -15,7 +15,7 @@ class Actor extends MovingEntity
         // TODO: fix default parameters
         this.walkingSpeed = extras.walkingSpeed || kmhToMms(60);
         this.climbingSpeed = extras.climbingSpeed || 0.05;
-        this.jumpForce = extras.jumpForce || 0.3;
+        this.jumpForce = extras.jumpForce || 0.23;
         this.maxJumpPressingTime = extras.maxJumpPressingTime || 1000;
         this.inputs = extras.inputs || {};
 
@@ -79,6 +79,9 @@ class Actor extends MovingEntity
             if(this.bottom)
             {
                 this.setSprite("res/spaceguy/still.gif");
+
+                // slow down
+                this.velocity = this.velocity.setX(0);
             }
         }
 
@@ -137,6 +140,9 @@ class Actor extends MovingEntity
             else
             {
                 this.setSprite("res/spaceguy/still.gif");
+
+                // limit the velocity when not moving on a ladder
+                this.velocity = this.velocity.setY(0);
             }
         }
 
