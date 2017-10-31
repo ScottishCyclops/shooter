@@ -81,7 +81,7 @@ class Actor extends MovingEntity
                 this.setSprite("res/spaceguy/still.gif");
 
                 // slow down
-                this.velocity = this.velocity.setX(0);
+                this.velocity = this.velocity.divide(2);
             }
         }
 
