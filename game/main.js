@@ -5,9 +5,27 @@ let transitionTimout = null;
 
 let world, camera, player, background, dataBox;
 
-let currentDirection = "NONE";
+const directions =
+{
+    "NONE": -1,
+    "UP":    0,
+    "RIGHT": 1,
+    "DOWN":  2,
+    "LEFT":  3
+};
 
-const cameraOffset = 300;
+const currentDirections =
+{
+    HORIZONTAL: directions.NONE,
+    VERTICAL: directions.NONE
+};
+
+const cameraOffset =     300;
+const cameraOffsetTime = 750;
+const cameraBackTime =   500;
+const cameraBackDelay =  1000;
+
+const ladders = [];
 
 function setup()
 {
@@ -38,7 +56,6 @@ function setup()
         height: 120,
         sprite: "res/spaceguy/still.gif",
         depth: 5,
-        useCollisions: true,
         inputs:
         {
             LEFT:  "a",
@@ -56,57 +73,101 @@ function setup()
     canvas.appendChild(camera).appendChild(dataBox);
 
     createWorld();
+
+    // timeDivider = 2;
+    /*
+    const t = new Transition(amount =>
+    {
+        timeDivider += amount;
+    }, 10, 5000);
+    */
 }
 
 function keyDownEvent(key)
 {
-    const oldDirection = currentDirection;
+    // horizontal
+    const oldDirection = currentDirections.HORIZONTAL;
 
     if(key === player.inputs.LEFT)
     {
-        currentDirection = "LEFT";
+        currentDirections.HORIZONTAL = directions.LEFT;
     }
-    if(key === player.inputs.RIGHT)
+    else if(key === player.inputs.RIGHT)
     {
-        currentDirection = "RIGHT";
+        currentDirections.HORIZONTAL = directions.RIGHT;
     }
 
-    if(currentDirection !== oldDirection)
+    if(currentDirections.HORIZONTAL !== oldDirection)
     {
         changedDirection();
+    }
+
+    // vertical
+    if(key === player.inputs.UP)
+    {
+        currentDirections.VERTICAL = directions.UP;
+    }
+    else if(key === player.inputs.DOWN)
+    {
+        currentDirections.VERTICAL = directions.DOWN;
     }
 }
 
 function keyUpEvent(key)
 {
-    const oldDirection = currentDirection;
+    // horizontal
+    const oldDirection = currentDirections.HORIZONTAL;
 
     if(key === player.inputs.LEFT)
     {
         if(!isDown(player.inputs.RIGHT))
         {
-            currentDirection = "NONE";
+            currentDirections.HORIZONTAL = directions.NONE;
         }
         else
         {
-            currentDirection = "RIGHT";
+            currentDirections.HORIZONTAL = directions.RIGHT;
         }
     }
     if(key === player.inputs.RIGHT)
     {
         if(!isDown(player.inputs.LEFT))
         {
-            currentDirection = "NONE";
+            currentDirections.HORIZONTAL = directions.NONE;
         }
         else
         {
-            currentDirection = "LEFT";
+            currentDirections.HORIZONTAL = directions.LEFT;
         }
     }
 
-    if(currentDirection !== oldDirection)
+    if(currentDirections.HORIZONTAL !== oldDirection)
     {
         changedDirection();
+    }
+
+    // vertical
+    if(key === player.inputs.UP)
+    {
+        if(!isDown(player.inputs.DOWN))
+        {
+            currentDirections.VERTICAL = directions.NONE;
+        }
+        else
+        {
+            currentDirections.VERTICAL = directions.DOWN;
+        }
+    }
+    else if(key === player.inputs.DOWN)
+    {
+        if(!isDown(player.inputs.UP))
+        {
+            currentDirections.VERTICAL = directions.NONE;
+        }
+        else
+        {
+            currentDirections.VERTICAL = directions.UP;
+        }
     }
 }
 
@@ -119,6 +180,7 @@ function loop(deltaTime)
         `RIGHT    ${player.right}\n`,
         `BOTTOM   ${player.bottom}\n`,
         `LEFT     ${player.left}\n`,
+        `TIMEDIV  ${timeDivider}\n`
     );
 }
 
@@ -129,7 +191,7 @@ function changedDirection()
         transition.stop(false);
     }
 
-    if(currentDirection === "NONE")
+    if(currentDirections.HORIZONTAL === directions.NONE)
     {
         // move the camera back to the center
         transitionTimout = setTimeout(() =>
@@ -137,20 +199,20 @@ function changedDirection()
             transition = new Transition(amount =>
             {
                 camera.moveBy(amount, 0);
-            }, -camera.location.x, 1000);
-        }, 500);
+            }, -camera.location.x, cameraBackTime);
+        }, cameraBackDelay);
 
         return;
     }
 
     clearTimeout(transitionTimout);
 
-    if(currentDirection === "LEFT")
+    if(currentDirections.HORIZONTAL === directions.LEFT)
     {
         transition = new Transition(amount =>
         {
             camera.moveBy(amount, 0);
-        }, -camera.location.x + cameraOffset, 750);
+        }, -camera.location.x + cameraOffset, cameraOffsetTime);
 
         player.scaleTo(-1, 1);
     }
@@ -159,7 +221,7 @@ function changedDirection()
         transition = new Transition(amount =>
         {
             camera.moveBy(amount, 0);
-        }, -camera.location.x - cameraOffset, 750);
+        }, -camera.location.x - cameraOffset, cameraOffsetTime);
 
         player.scaleTo(1, 1);
     }
@@ -172,5 +234,14 @@ function createWorld()
     const rock2 = new Entity(300, innerHeight - 500, {width: 1700, height: 350, color: "grey", useCollisions: true});
     const dirt1 = new Entity(-2000, innerHeight - 900, {width: 1000, height: 500, color: "green", useCollisions: true});
     const dirt2 = new Entity(-750, innerHeight - 900, {width: 2250, height: 350, color: "green", useCollisions: true});
-    world.appendChild(core).appendChild(rock1).appendChild(rock2).appendChild(dirt1).appendChild(dirt2);
+    const dirt3 = new Entity(-1200, -300, {width: 400, height: 200, color: "blue", useCollisions: true});
+
+    ladders.push(new Entity(-1000, -1000, { width: 64, height: 2000, color: "brown" }));
+
+    ladders.forEach(ladder =>
+    {
+        world.appendChild(ladder);
+    });
+
+    world.appendChild(core).appendChild(rock1).appendChild(rock2).appendChild(dirt1).appendChild(dirt2).appendChild(dirt3);
 }

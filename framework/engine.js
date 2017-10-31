@@ -6,6 +6,7 @@ let loopFunction = undefined;
 let looping = false;
 let mousePos = ZERO_VECTOR
 let canvas = null;
+let timeDivider = 1;
 
 const UP_VECTOR = new Vector(0, -1);
 const DOWN_VECTOR = new Vector(0, 1);
@@ -28,7 +29,7 @@ window.onload = () =>
     loopFunction = () =>
     {
         const now = Date.now();
-        const delta = now - lastTime;
+        const delta = (now - lastTime) / timeDivider;
         lastTime = now;
 
         if(typeof loop === "function")
@@ -208,7 +209,7 @@ function millis()
 
 /**
  * Adds an object to the registered list to be updated every frame
- * 
+ *
  * Determines if it is an Entity or any other object
  * @param {any} object the object to register
  */

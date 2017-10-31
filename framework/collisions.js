@@ -27,7 +27,7 @@ function overlapsCircles(loc1, diam1, loc2, diam2)
  * @param {Vector} dim2 dimensions of the second rectangle
  * @return {boolean} true if the rectangles overlap
  */
-function overlapsBox(loc1, dim1, loc2, dim2)
+function overlapsBoxes(loc1, dim1, loc2, dim2)
 {
     return loc1.x < loc2.x + dim2.x &&
            loc1.x + dim1.x > loc2.x &&

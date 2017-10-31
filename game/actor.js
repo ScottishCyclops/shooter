@@ -10,12 +10,11 @@ class Actor extends MovingEntity
     constructor(locX, locY, extras)
     {
         super(locX, locY, extras);
-
         extras = extras || {};
 
         // TODO: fix default parameters
         this.walkingSpeed = extras.walkingSpeed || kmhToMms(60);
-        this.climbingSpeed = extras.climbingSpeed || 5;
+        this.climbingSpeed = extras.climbingSpeed || 0.05;
         this.jumpForce = extras.jumpForce || 0.3;
         this.maxJumpPressingTime = extras.maxJumpPressingTime || 1000;
         this.inputs = extras.inputs || {};
@@ -32,20 +31,33 @@ class Actor extends MovingEntity
     {
         // limit the horizontal velocity caused by the movement
         // TODO: find another way if the player needs to be lauched back
-        this.velocity = this.velocity.maxX(this.walkingSpeed).minX(-this.walkingSpeed);
+        this.velocity = this.velocity.maxX(this.walkingSpeed * deltaTime / 4).minX(-this.walkingSpeed * deltaTime / 4);
 
         super.update(deltaTime);
         this.updatePhysics(deltaTime);
 
+        let ladderCollision = false;
+
+        for(let i = 0; i < ladders.length; i++)
+        {
+            if(overlapsBoxes(this.location, this.getDimensions(), ladders[i].location, ladders[i].getDimensions()))
+            {
+                ladderCollision = true;
+                break;
+            }
+        }
+
+        const isDownJump = isDown(this.inputs.JUMP);
+
         // check if we need to stop jumping
-        if(!isDown(this.inputs.JUMP) || this.jumpPressingTime <= 0 || this.top || this.bottom)
+        if(!isDownJump || this.jumpPressingTime <= 0 || this.top || this.bottom)
         {
             this.jumping = false;
             this.jumpPressingTime = this.maxJumpPressingTime;
         }
 
         // if we are moving in a direction
-        if(currentDirection !== "NONE")
+        if(currentDirections.HORIZONTAL !== directions.NONE)
         {
             // TODO: implement better animation
             if(this.bottom)
@@ -53,7 +65,7 @@ class Actor extends MovingEntity
                 this.setSprite("res/spaceguy/walk.gif");
             }
 
-            if(currentDirection === "LEFT")
+            if(currentDirections.HORIZONTAL === directions.LEFT)
             {
                 this.acceleration = this.acceleration.addX(-this.walkingSpeed * deltaTime);
             }
@@ -73,18 +85,22 @@ class Actor extends MovingEntity
         if(this.bottom)
         {
             // start to jump
-            if(isDown(this.inputs.JUMP) && !this.jumping)
+            if(isDownJump && !this.jumping)
             {
                 this.jumping = true;
                 this.acceleration = this.acceleration.addY(-this.jumpForce * deltaTime / 2);
-                this.setSprite("res/spaceguy/jump.gif?+Math.random()");
+                this.setSprite("res/spaceguy/jump.gif");
             }
         }
         else
         {
-            // apply gravity as long as we are not in collision at the bottom
-            this.acceleration = this.acceleration.addY(GRAVITY * meter * deltaTime / 4);
-            this.setSprite("res/spaceguy/jump.gif");
+            // if we are not colliding with a ladder, or if we are jumping
+            if(!ladderCollision || this.jumping)
+            {
+                // apply gravity as long as we are not in collision at the bottom
+                this.acceleration = this.acceleration.addY(GRAVITY * meter * deltaTime / 4);
+                this.setSprite("res/spaceguy/jump.gif");
+            }
         }
 
         if(this.bottom && !this.wasBottom)
@@ -101,21 +117,44 @@ class Actor extends MovingEntity
             this.jumpPressingTime -= deltaTime;
         }
 
+        // ladder climbing
+
+        if(ladderCollision)
+        {
+            if(currentDirections.VERTICAL !== directions.NONE)
+            {
+                this.setSprite("res/spaceguy/land.gif");
+
+                if(currentDirections.VERTICAL === directions.UP)
+                {
+                    this.acceleration = this.acceleration.addY(-this.climbingSpeed * deltaTime);
+                }
+                else
+                {
+                    this.acceleration = this.acceleration.addY(this.climbingSpeed * deltaTime);
+                }
+            }
+            else
+            {
+                this.setSprite("res/spaceguy/still.gif");
+            }
+        }
+
         //TODO: use this code
         /*
         if(this.left && !this.wasLeft
             || this.right && !this.wasRight
             || this.top && !this.wasTop
             || this.bottom && !this.wasBottom)
-        {
-            // TODO: play hit sound
-            console.log("hit");
-        }
-        */
-        /*
-        if(this.top && !this.wasTop) console.log("top");
-        if(this.right && !this.wasRight) console.log("right");
-        if(this.bottom && !this.wasBottom) console.log("bottom");
+            {
+                // TODO: play hit sound
+                console.log("hit");
+            }
+            */
+            /*
+            if(this.top && !this.wasTop) console.log("top");
+            if(this.right && !this.wasRight) console.log("right");
+            if(this.bottom && !this.wasBottom) console.log("bottom");
         if(this.left && !this.wasLeft) console.log("left");
         */
     }

@@ -18,6 +18,9 @@ class MovingEntity extends Entity
      */
     constructor(locX, locY, extras)
     {
+        extras = extras || {};
+        extras.useCollisions = true;
+
         super(locX, locY, extras);
 
         this.velocity =     ZERO_VECTOR;

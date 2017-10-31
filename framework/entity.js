@@ -99,7 +99,10 @@ class Entity
         this._updateBackground();
 
         // auto registering
-        registerObject(this);
+        if(extras.register || extras.useCollisions)
+        {
+            registerObject(this);
+        }
     }
 
     // Transform methods
@@ -349,7 +352,7 @@ class Entity
 
     /**
      * Updates the entity
-     * @param {number} deltaTime time passed since the last frame in ms 
+     * @param {number} deltaTime time passed since the last frame in ms
      * @public
      */
     update(deltaTime)
@@ -416,7 +419,7 @@ class Entity
         canvas._html.appendChild(child._html);
 
         // TODO: fix why it is needed
-        child.moveBy(ZERO_VECTOR);
+        // child.moveBy(ZERO_VECTOR);
         return this;
     }
 
