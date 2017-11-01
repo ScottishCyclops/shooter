@@ -73,12 +73,10 @@ function setup()
     player.addActions(
         new Action("res/anims/spaceguy/still", 2, {delay: 750, iterations: -1}),
         new Action("res/anims/spaceguy/walk",  2, {delay: 250, iterations: -1}),
-        new Action("res/anims/spaceguy/land",  2, {delay: 500}),
+        new Action("res/anims/spaceguy/land",  2, {delay: 100}),
         new Action("res/anims/spaceguy/jump",  2, {delay: 75}),
         new Action("res/anims/spaceguy/fly",   1, {delay: 1, iterations: -1})
     );
-
-    player.playAction("still");
 
     camera.appendChild(world).appendChild(player);
     canvas.appendChild(camera).appendChild(dataBox);
@@ -102,8 +100,8 @@ function setup()
         }
     });
 
-    window.onblur = pause;
-    window.onfocus = play;
+    // window.onblur = pause;
+    // window.onfocus = play;
 }
 
 function keyDownEvent(key)

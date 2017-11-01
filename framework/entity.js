@@ -347,7 +347,7 @@ class Entity
         this._currentAction = this._actions[name].changeSettings(settings).reset();
 
         // flush the action queue
-        this._actionQueue = [];
+        // this._actionQueue = [];
 
         return this;
     }
@@ -361,6 +361,27 @@ class Entity
      */
     queueAction(name, settings)
     {
+        if(this._currentAction === undefined)
+        {
+            // play directly if nothing is beeing played
+            return this.playAction(name, settings);
+        }
+
+        if(this._currentAction.name === name)
+        {
+            // don't queue if already running
+            return this;
+        }
+
+        if(this._actionQueue.length > 0)
+        {
+            if(this._actionQueue[this._actionQueue.length - 1].name === name)
+            {
+                // don't queue if already there
+                return this;
+            }
+        }
+
         this._actionQueue.push(this._actions[name].changeSettings(settings).reset());
 
         return this;
@@ -458,10 +479,11 @@ class Entity
             return;
         }
 
-        // if returns true, it is finished
-        if(this._currentAction.update(this, deltaTime))
+        // if the current action is infinite and we've got stuff to play next
+        // or if the current action is done, play the next
+        if((this._currentAction.isInfinite() && this._actionQueue.length > 0)
+            || this._currentAction.update(this, deltaTime))
         {
-            // shift will return undefined if the array is empty
             this._currentAction = this._actionQueue.shift();
         }
     }

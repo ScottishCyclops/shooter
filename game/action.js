@@ -138,6 +138,11 @@ class Action
         return this;
     }
 
+    isInfinite()
+    {
+        return this.iterations === -1;
+    }
+
     /**
      * Preload all the frames by applying them to an element a first time
      * @private

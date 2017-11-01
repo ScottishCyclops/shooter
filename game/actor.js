@@ -61,7 +61,7 @@ class Actor extends MovingEntity
         {
             if(this.bottom)
             {
-                this.playAction("walk");
+                this.queueAction("walk");
             }
 
             if(currentDirections.HORIZONTAL === directions.LEFT)
@@ -77,7 +77,7 @@ class Actor extends MovingEntity
         {
             if(this.bottom)
             {
-                this.playAction("still");
+                this.queueAction("still");
 
                 // slow down
                 this.velocity = this.velocity.divide(2);
@@ -126,6 +126,7 @@ class Actor extends MovingEntity
             if(currentDirections.VERTICAL !== directions.NONE)
             {
                 // TODO: ladder animation
+                this.queueAction("fly");
 
                 if(currentDirections.VERTICAL === directions.UP)
                 {
@@ -138,7 +139,7 @@ class Actor extends MovingEntity
             }
             else
             {
-                this.playAction("still");
+                this.queueAction("still");
 
                 // limit the velocity when not moving on a ladder
                 this.velocity = this.velocity.setY(0);
