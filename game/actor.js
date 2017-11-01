@@ -59,10 +59,9 @@ class Actor extends MovingEntity
         // if we are moving in a direction
         if(currentDirections.HORIZONTAL !== directions.NONE)
         {
-            // TODO: implement better animation
             if(this.bottom)
             {
-                this.setSprite("res/spaceguy/walk.gif");
+                this.playAction("walk");
             }
 
             if(currentDirections.HORIZONTAL === directions.LEFT)
@@ -78,7 +77,7 @@ class Actor extends MovingEntity
         {
             if(this.bottom)
             {
-                this.setSprite("res/spaceguy/still.gif");
+                this.playAction("still");
 
                 // slow down
                 this.velocity = this.velocity.divide(2);
@@ -92,7 +91,8 @@ class Actor extends MovingEntity
             {
                 this.jumping = true;
                 this.acceleration = this.acceleration.addY(-this.jumpForce * deltaTime / 2);
-                this.setSprite("res/spaceguy/jump.gif");
+
+                this.playAction("jump").queueAction("fly");
             }
         }
         else
@@ -102,13 +102,12 @@ class Actor extends MovingEntity
             {
                 // apply gravity as long as we are not in collision at the bottom
                 this.acceleration = this.acceleration.addY(GRAVITY * meter * deltaTime / 4);
-                this.setSprite("res/spaceguy/jump.gif");
             }
         }
 
         if(this.bottom && !this.wasBottom)
         {
-            this.setSprite("res/spaceguy/land.gif");
+            this.playAction("land").queueAction("still");
         }
 
         // apply upwards force as long as we are jumping
@@ -126,7 +125,7 @@ class Actor extends MovingEntity
         {
             if(currentDirections.VERTICAL !== directions.NONE)
             {
-                this.setSprite("res/spaceguy/land.gif");
+                // TODO: ladder animation
 
                 if(currentDirections.VERTICAL === directions.UP)
                 {
@@ -139,7 +138,7 @@ class Actor extends MovingEntity
             }
             else
             {
-                this.setSprite("res/spaceguy/still.gif");
+                this.playAction("still");
 
                 // limit the velocity when not moving on a ladder
                 this.velocity = this.velocity.setY(0);

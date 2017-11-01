@@ -89,6 +89,18 @@ class Entity
          */
         this._html = document.createElement("div");
 
+        this._currentAction = undefined;
+        this._actions = {};
+        this._actionQueue = [];
+
+        /**
+         * @property {boolean} pauseAction should the action be paused
+         * @public
+         */
+        this.pauseAction = false;
+
+        this.registered = false;
+
         // html element basic styling
         this._html.style.position = "absolute";
         this._html.style.top = 0;
@@ -108,6 +120,7 @@ class Entity
         if(extras.register || extras.useCollisions)
         {
             registerObject(this);
+            this.registered = true;
         }
     }
 
@@ -258,13 +271,15 @@ class Entity
     {
         this.useCollisions = useCollisions;
 
-        if(this.useCollisions)
+        if(this.useCollisions && !this.registered)
         {
             registerObject(this);
+            this.registered = true;
         }
         else
         {
             unregisterObject(this);
+            this.registered = false;
         }
 
         return this;
@@ -317,6 +332,55 @@ class Entity
     {
         this.spriteSize = size;
         this._updateBackgroundSize();
+        return this;
+    }
+
+    /**
+     * Plays an action. flushes the current action queue
+     * @param {string} name the unique name of the action
+     * @param {any} settings any new settings
+     * @return {Entity} itself to be chainable
+     * @public
+     */
+    playAction(name, settings)
+    {
+        this._currentAction = this._actions[name].changeSettings(settings).reset();
+
+        // flush the action queue
+        this._actionQueue = [];
+
+        return this;
+    }
+
+    /**
+     * Qeueues an action to be played next
+     * @param {string} name the unique name of the action
+     * @param {any} settings any new settings
+     * @return {Entity} itself to be chainable
+     * @public
+     */
+    queueAction(name, settings)
+    {
+        this._actionQueue.push(this._actions[name].changeSettings(settings).reset());
+
+        return this;
+    }
+
+    /**
+     * Adds any number of new actions to this entity
+     *
+     * if two actions with the same name exist, the last one will be kept
+     * @param {Action[]} actions the actions to add
+     * @return {Entity} itself to be chainable
+     * @public
+     */
+    addActions(...actions)
+    {
+        actions.forEach(action =>
+        {
+            this._actions[action.name] = action;
+        });
+
         return this;
     }
 
@@ -384,7 +448,22 @@ class Entity
      */
     update(deltaTime)
     {
-        return;
+        if(this.pauseAction)
+        {
+            return;
+        }
+
+        if(this._currentAction === undefined)
+        {
+            return;
+        }
+
+        // if returns true, it is finished
+        if(this._currentAction.update(this, deltaTime))
+        {
+            // shift will return undefined if the array is empty
+            this._currentAction = this._actionQueue.shift();
+        }
     }
 
     // CSS update methods
