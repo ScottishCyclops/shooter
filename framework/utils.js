@@ -73,7 +73,7 @@ function map(value, inMin, inMax, outMin, outMax)
  * @param {number} value the value to clamp
  * @param {number} min the minimum value
  * @param {number} max the maximum value
- * @return {number} the clamped value 
+ * @return {number} the clamped value
  */
 function clamp(value, min, max)
 {
@@ -169,6 +169,24 @@ function setPrecision(number, decimals)
 
     return rounded;
 }
+
+/**
+ * Preloads images in ram
+ * @param {string[]} images paths to the image files
+ */
+/*
+function preloadImages(...images)
+{
+    const data = images.map(img =>
+    {
+        return `url(${img})`;
+    }).join(" ");
+
+    console.log(images);
+
+    document.head.append(`<style>body:after{position:absolute; width:0; height:0; overflow:hidden;content:${data}}</style>`);
+}
+*/
 
 /**
  * Returns true if the given `element` is in the array

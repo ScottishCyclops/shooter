@@ -7,6 +7,7 @@ let looping = false;
 let mousePos = ZERO_VECTOR;
 let canvas = null;
 let timeDivider = 1;
+let dummyElement = null;
 
 const UP_VECTOR = new Vector(0, -1);
 const DOWN_VECTOR = new Vector(0, 1);
@@ -23,6 +24,11 @@ const objects = [];
 window.onload = () =>
 {
     canvas = new Canvas(innerWidth, innerHeight);
+    dummyElement = document.createElement("div");
+    dummyElement.style.width = 0;
+    dummyElement.style.height = 0;
+    dummyElement.style.overflow = "hidden";
+    document.body.appendChild(dummyElement);
 
     let lastTime = startTime;
 
@@ -47,9 +53,6 @@ window.onload = () =>
             object.update(delta);
         });
     };
-    // TODO: use while ?
-    loopHandle = setInterval(loopFunction, 0);
-    looping = true;
 
     // Events
 
@@ -131,9 +134,13 @@ window.onload = () =>
     // user setup
     if(typeof setup === "function")
     {
-        setup()
+        setup();
     }
-}
+
+    // start the loop
+    loopHandle = setInterval(loopFunction, 0);
+    looping = true;
+};
 
 // Helpers
 

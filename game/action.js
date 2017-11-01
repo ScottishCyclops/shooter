@@ -47,6 +47,8 @@ class Action
         this._totalTime = this.numFrames * this.delay;
         this._passedTime = 0;
         this._passedIterations = 0;
+
+        this._preload();
     }
 
     /**
@@ -134,5 +136,20 @@ class Action
         }
 
         return this;
+    }
+
+    /**
+     * Preload all the frames by applying them to an element a first time
+     * @private
+     */
+    _preload()
+    {
+        let images = "";
+        for(let i = 0; i < this.numFrames; i++)
+        {
+            images += `url(${this.path}/${i}.png) `;
+        }
+
+        dummyElement.style.content += images;
     }
 }

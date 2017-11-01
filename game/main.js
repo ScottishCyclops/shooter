@@ -31,6 +31,11 @@ let fps = [];
 let avgFps = 0;
 let lowest = Infinity;
 
+function preload()
+{
+    preloadImages("res/anims/spaceguy/");
+}
+
 function setup()
 {
     canvas.setColor("#222");
