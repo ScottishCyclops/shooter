@@ -38,11 +38,6 @@ window.onload = () =>
         const delta = (now - lastTime) / timeDivider;
         lastTime = now;
 
-        if(typeof loop === "function")
-        {
-            loop(delta);
-        }
-
         entities.forEach(entity =>
         {
             entity.update(delta);
@@ -52,7 +47,18 @@ window.onload = () =>
         {
             object.update(delta);
         });
+
+        if(typeof loop === "function")
+        {
+            loop(delta);
+        }
     };
+
+    // user setup
+    if(typeof setup === "function")
+    {
+        setup();
+    }
 
     // Events
 
@@ -129,12 +135,6 @@ window.onload = () =>
         {
             return mouseMoveEvent(e);
         }
-    }
-
-    // user setup
-    if(typeof setup === "function")
-    {
-        setup();
     }
 
     // start the loop
