@@ -30,6 +30,7 @@ const ladders = [];
 let fps = [];
 let avgFps = 0;
 let lowest = Infinity;
+let maxHeight = 999;
 
 function setup()
 {
@@ -101,6 +102,55 @@ function setup()
 
     // window.onblur = pause;
     // window.onfocus = play;
+}
+
+function loop(deltaTime)
+{
+    fps.push(Math.floor(1000 / deltaTime));
+
+    if(fps.length >= 20)
+    {
+        let total = 0;
+        lowest = Infinity;
+        fps.forEach(value =>
+        {
+            total += value;
+
+            if(value < lowest)
+            {
+                lowest = value;
+            }
+        });
+
+        avgFps = setPrecision(total / fps.length, 1);
+
+        fps = [];
+    }
+
+    dataBox.setText(
+        `AVGFPS   ${avgFps}\n`,
+        `LOWEST   ${lowest}\n`,
+        `VELOCITY ${player.velocity}\n`,
+        `TOP      ${player.top}\n`,
+        `RIGHT    ${player.right}\n`,
+        `BOTTOM   ${player.bottom}\n`,
+        `LEFT     ${player.left}\n`,
+        `TIMEDIV  ${timeDivider}\n`,
+        `SPRITE   ${player.sprite}\n`,
+        `MAX      ${maxHeight}\n`
+    );
+
+    if(player.bottom && !player.wasBottom)
+    {
+        maxHeight = 999;
+    }
+    else
+    {
+        if(player.velocity.y < maxHeight)
+        {
+            maxHeight = player.location.y;
+        }
+    }
 }
 
 function keyDownEvent(key)
@@ -189,42 +239,6 @@ function keyUpEvent(key)
             currentDirections.VERTICAL = directions.UP;
         }
     }
-}
-
-function loop(deltaTime)
-{
-    fps.push(Math.floor(1000 / deltaTime));
-
-    if(fps.length >= 20)
-    {
-        let total = 0;
-        lowest = Infinity;
-        fps.forEach(value =>
-        {
-            total += value;
-
-            if(value < lowest)
-            {
-                lowest = value;
-            }
-        });
-
-        avgFps = setPrecision(total / fps.length, 1);
-
-        fps = [];
-    }
-
-    dataBox.setText(
-        `AVGFPS   ${avgFps}\n`,
-        `LOWEST   ${lowest}\n`,
-        `VELOCITY ${player.velocity}\n`,
-        `TOP      ${player.top}\n`,
-        `RIGHT    ${player.right}\n`,
-        `BOTTOM   ${player.bottom}\n`,
-        `LEFT     ${player.left}\n`,
-        `TIMEDIV  ${timeDivider}\n`,
-        `SPRITE   ${player.sprite}\n`
-    );
 }
 
 function changedDirection()
