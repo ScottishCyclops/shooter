@@ -31,11 +31,6 @@ let fps = [];
 let avgFps = 0;
 let lowest = Infinity;
 
-function preload()
-{
-    preloadImages("res/anims/spaceguy/");
-}
-
 function setup()
 {
     canvas.setColor("#222");
@@ -51,11 +46,11 @@ function setup()
         depth: 30
     });
 
+    // TODO: add actions at player creation
     player = new Actor(innerWidth / 2, innerHeight / 2,
     {
         width: 64,
         height: 120,
-        sprite: "res/spaceguy/still.gif",
         depth: 5,
         inputs:
         {
@@ -66,7 +61,7 @@ function setup()
             JUMP:  " "
         },
         // color: "#0005",
-        walkingSpeed: 3
+        walkingSpeed: 0.75
     });
 
 
@@ -78,12 +73,16 @@ function setup()
         new Action("res/anims/spaceguy/fly",   1, {delay: 1, iterations: -1})
     );
 
+    player.playAction("fly");
+
     camera.appendChild(world).appendChild(player);
     canvas.appendChild(camera).appendChild(dataBox);
 
+    pause();
     readFile("level.json", data =>
     {
         parseLevel(data);
+        play();
     });
 
     // pause or play the game

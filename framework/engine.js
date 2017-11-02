@@ -1,6 +1,8 @@
 // one meter is x pixels
 const meter = 64;
 const startTime = Date.now();
+let pauseStartTime = 0;
+let totalPauseTime = 0;
 let loopHandle = undefined;
 let loopFunction = undefined;
 let looping = false;
@@ -30,11 +32,11 @@ window.onload = () =>
     dummyElement.style.overflow = "hidden";
     document.body.appendChild(dummyElement);
 
-    let lastTime = startTime;
+    let lastTime = 0;
 
     loopFunction = () =>
     {
-        const now = Date.now();
+        const now = millis();
         const delta = (now - lastTime) / timeDivider;
         lastTime = now;
 
@@ -155,6 +157,8 @@ function pause()
         return;
     }
 
+    pauseStartTime = Date.now();
+
     clearInterval(loopHandle);
     loopHandle = null;
     looping = false;
@@ -169,6 +173,8 @@ function play()
     {
         return;
     }
+
+    totalPauseTime += Date.now() - pauseStartTime;
 
     loopHandle = setInterval(loopFunction, 0);
     looping = true;
@@ -234,7 +240,7 @@ function wasPressedBefore(key1, key2)
  */
 function millis()
 {
-    return Date.now() - startTime;
+    return Date.now() - startTime - totalPauseTime;
 }
 
 /**

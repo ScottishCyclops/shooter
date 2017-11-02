@@ -31,7 +31,7 @@ class Actor extends MovingEntity
     {
         // limit the horizontal velocity caused by the movement
         // TODO: find another way if the player needs to be lauched back
-        this.velocity = this.velocity.maxX(this.walkingSpeed * deltaTime / 4).minX(-this.walkingSpeed * deltaTime / 4);
+        this.velocity = this.velocity.maxX(this.walkingSpeed * deltaTime).minX(-this.walkingSpeed * deltaTime);
 
         super.update(deltaTime);
         this.updatePhysics(deltaTime);
@@ -66,11 +66,11 @@ class Actor extends MovingEntity
 
             if(currentDirections.HORIZONTAL === directions.LEFT)
             {
-                this.acceleration = this.acceleration.addX(-this.walkingSpeed * deltaTime);
+                this.acceleration = this.acceleration.addX(-this.walkingSpeed);
             }
             else
             {
-                this.acceleration = this.acceleration.addX(this.walkingSpeed * deltaTime);
+                this.acceleration = this.acceleration.addX(this.walkingSpeed);
             }
         }
         else
@@ -90,7 +90,7 @@ class Actor extends MovingEntity
             if(isDownJump && !this.jumping)
             {
                 this.jumping = true;
-                this.acceleration = this.acceleration.addY(-this.jumpForce * deltaTime / 2);
+                this.acceleration = this.acceleration.addY(-this.jumpForce * 10);
 
                 this.playAction("jump").queueAction("fly");
             }
@@ -115,7 +115,7 @@ class Actor extends MovingEntity
         // the time spent jumping and the maximum time we can jump
         if(this.jumping)
         {
-            this.acceleration = this.acceleration.addY(-this.jumpForce * deltaTime * (this.jumpPressingTime / this.maxJumpPressingTime));
+            this.acceleration = this.acceleration.addY(-this.jumpForce * 5 * (this.jumpPressingTime / this.maxJumpPressingTime));
             this.jumpPressingTime -= deltaTime;
         }
 
