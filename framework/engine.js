@@ -235,7 +235,7 @@ function wasPressedBefore(key1, key2)
 /**
  * Returns the current time in milliseconds since the program started
  *
- * Time spent in pause is not removed
+ * Time spent in pause is removed
  * @return {number} the number of milliseconds
  */
 function millis()
