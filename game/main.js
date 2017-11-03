@@ -62,7 +62,7 @@ function setup()
             JUMP:  " "
         },
         // color: "#0005",
-        walkingSpeed: 0.75
+        walkingSpeed: 7.5
     });
 
 

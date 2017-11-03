@@ -31,7 +31,7 @@ class Actor extends MovingEntity
     {
         // limit the horizontal velocity caused by the movement
         // TODO: find another way if the player needs to be lauched back
-        this.velocity = this.velocity.maxX(this.walkingSpeed * deltaTime).minX(-this.walkingSpeed * deltaTime);
+        this.velocity = this.velocity.maxX(this.walkingSpeed).minX(-this.walkingSpeed);
 
         super.update(deltaTime);
         this.updatePhysics(deltaTime);
@@ -115,7 +115,7 @@ class Actor extends MovingEntity
         // the time spent jumping and the maximum time we can jump
         if(this.jumping)
         {
-            this.acceleration = this.acceleration.addY(-this.jumpForce * 5 * (this.jumpPressingTime / this.maxJumpPressingTime));
+            this.acceleration = this.acceleration.addY(-this.jumpForce * deltaTime * (this.jumpPressingTime / this.maxJumpPressingTime));
             this.jumpPressingTime -= deltaTime;
         }
 
