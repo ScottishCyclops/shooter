@@ -66,11 +66,11 @@ class Actor extends MovingEntity
 
             if(currentDirections.HORIZONTAL === directions.LEFT)
             {
-                this.acceleration = this.acceleration.addX(-this.walkingSpeed * 15);
+                this.acceleration = this.acceleration.addX(-this.walkingSpeed * deltaTime);
             }
             else
             {
-                this.acceleration = this.acceleration.addX(this.walkingSpeed * 15);
+                this.acceleration = this.acceleration.addX(this.walkingSpeed * deltaTime);
             }
         }
         else

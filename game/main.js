@@ -62,7 +62,7 @@ function setup()
             JUMP:  " "
         },
         // color: "#0005",
-        walkingSpeed: 0.5
+        walkingSpeed: 0.6
     });
 
 
@@ -128,11 +128,11 @@ function loop(deltaTime)
     }
 
     dataBox.setText(
-        `AVGFPS   ${avgFps}\n`,
-        `LOWEST   ${lowest}\n`,
-        `VELOCITY ${player.velocity}\n`,
-        `ACC      ${player.acceleration}\n`,
-        `DELTA    ${deltaTime}\n`
+        `AVG FPS          ${avgFps}\n`,
+        `LOWEST FPS       ${lowest}\n`,
+        `VELOCITY/MS      ${player.velocity.divide(deltaTime)}\n`,
+        `ACCELERATION/MS  ${player.acceleration.divide(deltaTime)}\n`,
+        `DELTA            ${deltaTime}\n`
     );
 }
 
