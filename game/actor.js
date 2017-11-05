@@ -79,8 +79,8 @@ class Actor extends MovingEntity
             {
                 this.queueAction("still");
 
-                // slow down
-                this.velocity = this.velocity.divide(2);
+                // slow down when player stops moving
+                this.velocity = this.velocity.divide(deltaTime / 2);
             }
         }
 
