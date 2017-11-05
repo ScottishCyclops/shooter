@@ -2,7 +2,7 @@ const DEGREES = 180 / Math.PI;
 const PX = "px";
 // TODO: set gravity differently
 const GRAVITY = msToMms(9.81);
-const DRAG = 0.05;
+const DRAG = 0.002;
 
 /**
  * Converts a radian angle to a degree angle

@@ -120,7 +120,7 @@ class MovingEntity extends Entity
         world.moveBy(diff);
 
         // set precision to avoid super small values
-        this.velocity = this.velocity.add(this.acceleration).multiply(1 - DRAG).setPrecision(1);
+        this.velocity = this.velocity.add(this.acceleration).divide(1 + DRAG * deltaTime).setPrecision(1);
         this.acceleration = ZERO_VECTOR;
     }
 }

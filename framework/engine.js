@@ -10,6 +10,7 @@ let mousePos = ZERO_VECTOR;
 let canvas = null;
 let timeDivider = 1;
 let dummyElement = null;
+let delay = 32;
 
 const UP_VECTOR = new Vector(0, -1);
 const DOWN_VECTOR = new Vector(0, 1);
@@ -140,7 +141,7 @@ window.onload = () =>
     }
 
     // start the loop
-    loopHandle = setInterval(loopFunction, 0);
+    loopHandle = setInterval(loopFunction, delay);
     looping = true;
 };
 
@@ -176,7 +177,7 @@ function play()
 
     totalPauseTime += Date.now() - pauseStartTime;
 
-    loopHandle = setInterval(loopFunction, 0);
+    loopHandle = setInterval(loopFunction, delay);
     looping = true;
 }
 
