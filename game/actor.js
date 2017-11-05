@@ -31,7 +31,7 @@ class Actor extends MovingEntity
     {
         // limit the horizontal velocity caused by the movement
         // TODO: find another way if the player needs to be lauched back
-        this.velocity = this.velocity.maxX(this.walkingSpeed).minX(-this.walkingSpeed);
+        this.velocity = this.velocity.maxX(this.walkingSpeed * deltaTime).minX(-this.walkingSpeed * deltaTime);
 
         super.update(deltaTime);
         this.updatePhysics(deltaTime);
@@ -66,11 +66,11 @@ class Actor extends MovingEntity
 
             if(currentDirections.HORIZONTAL === directions.LEFT)
             {
-                this.acceleration = this.acceleration.addX(-this.walkingSpeed);
+                this.acceleration = this.acceleration.addX(-this.walkingSpeed * 15);
             }
             else
             {
-                this.acceleration = this.acceleration.addX(this.walkingSpeed);
+                this.acceleration = this.acceleration.addX(this.walkingSpeed * 15);
             }
         }
         else
