@@ -61,7 +61,7 @@ function setup()
             LEFT:  "a",
             JUMP:  " "
         },
-        // color: "#0005",
+        color: "#0005",
         walkingSpeed: 0.6
     });
 
@@ -73,6 +73,8 @@ function setup()
         new Action("res/anims/spaceguy/jump",  2, {delay: 75}),
         new Action("res/anims/spaceguy/fly",   1, {delay: 1, iterations: -1})
     );
+
+    player.pauseAction = true;
 
     player.playAction("fly");
 
@@ -130,9 +132,10 @@ function loop(deltaTime)
     dataBox.setText(
         `AVG FPS          ${avgFps}\n`,
         `LOWEST FPS       ${lowest}\n`,
-        `VELOCITY/MS      ${player.velocity.divide(deltaTime)}\n`,
-        `ACCELERATION/MS  ${player.acceleration.divide(deltaTime)}\n`,
-        `DELTA            ${deltaTime}\n`
+        `VELOCITY/MS      ${player.velocity.divide(deltaTime).toPaddedString(4, 1)}\n`,
+        `ACCELERATION/MS  ${player.acceleration.divide(deltaTime).toPaddedString(4, 1)}\n`,
+        `DELTA            ${deltaTime}\n`,
+        `JUMPING          ${player.jumping}\n`
     );
 }
 

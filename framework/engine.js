@@ -10,7 +10,7 @@ let mousePos = ZERO_VECTOR;
 let canvas = null;
 let timeDivider = 1;
 let dummyElement = null;
-let delay = 32;
+let delay = 0;
 
 const UP_VECTOR = new Vector(0, -1);
 const DOWN_VECTOR = new Vector(0, 1);

@@ -15,7 +15,7 @@ class Actor extends MovingEntity
         // TODO: fix default parameters
         this.walkingSpeed = extras.walkingSpeed || kmhToMms(60);
         this.climbingSpeed = extras.climbingSpeed || 0.05;
-        this.jumpForce = extras.jumpForce || 0.23;
+        this.jumpForce = extras.jumpForce || 5;
         this.maxJumpPressingTime = extras.maxJumpPressingTime || 1000;
         this.inputs = extras.inputs || {};
 
@@ -40,7 +40,8 @@ class Actor extends MovingEntity
 
         for(let i = 0; i < ladders.length; i++)
         {
-            if(overlapsBoxes(this.location, this.getDimensions(), ladders[i].location, ladders[i].getDimensions()))
+            if(overlapsBoxes(this.location, this.getDimensions(),
+                ladders[i].location, ladders[i].getDimensions()))
             {
                 ladderCollision = true;
                 break;
@@ -90,24 +91,27 @@ class Actor extends MovingEntity
             if(isDownJump && !this.jumping)
             {
                 this.jumping = true;
-                this.acceleration = this.acceleration.addY(-this.jumpForce * 10);
+                this.acceleration = this.acceleration.addY(-this.jumpForce);
+                console.log("jumping");
 
                 this.playAction("jump").queueAction("fly");
+            }
+
+            if(!this.wasBottom)
+            {
+                this.playAction("land").queueAction("still");
             }
         }
         else
         {
             // if we are not colliding with a ladder, or if we are jumping
+            // this makes sure if we are jumping and moving over a ladder
+            // we won't be stopped
             if(!ladderCollision || this.jumping)
             {
                 // apply gravity as long as we are not in collision at the bottom
-                this.acceleration = this.acceleration.addY(GRAVITY * meter * deltaTime / 4);
+                this.acceleration = this.acceleration.addY(GRAVITY * deltaTime);
             }
-        }
-
-        if(this.bottom && !this.wasBottom)
-        {
-            this.playAction("land").queueAction("still");
         }
 
         // apply upwards force as long as we are jumping
@@ -115,7 +119,14 @@ class Actor extends MovingEntity
         // the time spent jumping and the maximum time we can jump
         if(this.jumping)
         {
-            this.acceleration = this.acceleration.addY(-this.jumpForce * deltaTime * (this.jumpPressingTime / this.maxJumpPressingTime));
+            // force ratio goes from 1 to 0.5
+            // as you spend more time holding jump
+            // until you jumped for `maxJumpPressingTime`
+            // const forceRatio = this.jumpPressingTime / this.maxJumpPressingTime / 2 + 0.5;
+            const forceRatio = (1 - this.jumpPressingTime / this.maxJumpPressingTime) / 4;
+
+            // this.acceleration = this.acceleration.addY(-GRAVITY * deltaTime * forceRatio);
+            this.acceleration = this.acceleration.maxY(forceRatio);
             this.jumpPressingTime -= deltaTime;
         }
 

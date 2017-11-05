@@ -1,12 +1,11 @@
 const DEGREES = 180 / Math.PI;
 const PX = "px";
-// TODO: set gravity differently
-const GRAVITY = msToMms(9.81);
-const DRAG = 0.002;
+const GRAVITY = 0.15;
+const DRAG = 0.02;
 
 /**
  * Converts a radian angle to a degree angle
- * @param {number} rad the angle in radians
+ * @param {number} rad the angle in raadians
  * @return {number} the angle in degrees
  */
 function radianToDegrees(rad)

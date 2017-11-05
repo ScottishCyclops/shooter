@@ -123,7 +123,9 @@ class MovingEntity extends Entity
         world.moveBy(diff);
 
         // set precision to avoid super small values
-        this.velocity = this.velocity.add(this.acceleration).divide(1 + DRAG * deltaTime).setPrecision(1);
+        // drag is not influenced by deltaTime because velocity is already
+        // time dependant
+        this.velocity = this.velocity.multiply(1 - DRAG).add(this.acceleration).setPrecision(2);
         this.acceleration = ZERO_VECTOR;
     }
 }
