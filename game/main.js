@@ -62,7 +62,7 @@ function setup()
             JUMP:  " "
         },
         // color: "#0005",
-        walkingSpeed: 7.5
+        walkingSpeed: 0.5
     });
 
 
@@ -131,12 +131,7 @@ function loop(deltaTime)
         `AVGFPS   ${avgFps}\n`,
         `LOWEST   ${lowest}\n`,
         `VELOCITY ${player.velocity}\n`,
-        `TOP      ${player.top}\n`,
-        `RIGHT    ${player.right}\n`,
-        `BOTTOM   ${player.bottom}\n`,
-        `LEFT     ${player.left}\n`,
-        `TIMEDIV  ${timeDivider}\n`,
-        `SPRITE   ${player.sprite}\n`,
+        `ACC      ${player.acceleration}\n`,
         `DELTA    ${deltaTime}\n`
     );
 }
