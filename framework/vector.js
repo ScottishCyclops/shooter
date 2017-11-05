@@ -658,6 +658,18 @@ class Vector
         return "(" + this.x + suffix + ", " + this.y + suffix + ")";
     }
 
+    toPaddedString(magnitude, precision)
+    {
+        magnitude = magnitude || 3;
+        precision = precision || 2;
+
+        // +1 to account for the dot `100.00`
+        // +1 to account for the minus `-100.00`
+        const pad = magnitude + precision + 2;
+
+        return `(${padLeft(this.x.toFixed(precision), " ", pad)}, ${padLeft(this.y.toFixed(precision), " ", pad)})`;
+    }
+
     /**
      * Returns an array representation of the vector
      * @return {number[]} array containing x at index 0 and y at index 1
