@@ -137,20 +137,8 @@ function loop(deltaTime)
         `LEFT     ${player.left}\n`,
         `TIMEDIV  ${timeDivider}\n`,
         `SPRITE   ${player.sprite}\n`,
-        `MAX      ${maxHeight}\n`
+        `DELTA    ${deltaTime}\n`
     );
-
-    if(player.bottom && !player.wasBottom)
-    {
-        maxHeight = 999;
-    }
-    else
-    {
-        if(player.velocity.y < maxHeight)
-        {
-            maxHeight = player.location.y;
-        }
-    }
 }
 
 function keyDownEvent(key)

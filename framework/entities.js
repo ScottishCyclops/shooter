@@ -69,6 +69,9 @@ class MovingEntity extends Entity
                 // ignore entities that do not participate
                 if(!entities[i].useCollisions) continue;
 
+                // TODO: use simpler method to determine
+                // if collision is possible before using the precise one
+
                 const side = getCollisionSide(
                     newLocation,
                     this.getDimensions(),
@@ -104,7 +107,7 @@ class MovingEntity extends Entity
 
                     newLocation = newLocation.setY(entities[i].location.y - this.height);
                 }
-                else if(side === collisionSides.LEFT)
+                else/* if(side === collisionSides.LEFT)*/
                 {
                     this.left = true;
                     this.velocity = this.velocity.minX(0);
