@@ -170,6 +170,49 @@ function setPrecision(number, decimals)
     return rounded;
 }
 
+// TODO: support multichar pattern for padding
+/**
+ * Aligns `n` on the left by adding a maximum of `amount` `char` on its right
+ * @param {any} n the string or number to align
+ * @param {string} char the char to use to align
+ * @param {number} amount the maximum length of the returned padded string
+ */
+function padRight(n, char, amount)
+{
+    const str = n.toString();
+    if(amount > str.length)
+    {
+        for(let i = 0; i < amount - str.length; i++)
+        {
+            str += char;
+        }
+    }
+
+    return str;
+}
+
+/**
+ * Aligns `n` on the right by adding a maximum of `amount` `char` on its left
+ * @param {any} n the string or number to align
+ * @param {string} char the char to use to align
+ * @param {number} amount the maximum length of the returned padded string
+ */
+function padLeft(n, char, amount)
+{
+    const str = n.toString();
+    let padding = "";
+
+    if(amount > str.length)
+    {
+        for(let i = 0; i < amount - str.length; i++)
+        {
+            padding += char;
+        }
+    }
+
+    return padding + str;
+}
+
 /**
  * Preloads images in ram
  * @param {string[]} images paths to the image files
