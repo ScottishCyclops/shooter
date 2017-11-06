@@ -4,15 +4,16 @@ class MovingEntity extends Entity
      * MovingEntity - Base class for an entity on which gravity is applied
      * @param {number} locX the x position in the world of the entity
      * @param {number} locY the y position in the world of the entity
+     * @param {PIXI.loaders.Resource} image the image ressource
      * @param {any} extras any extra parameters
      * @public
      */
-    constructor(locX, locY, extras)
+    constructor(locX, locY, image, extras)
     {
         extras = extras || {};
         extras.useCollisions = true;
 
-        super(locX, locY, extras);
+        super(locX, locY, image, extras);
 
         this.velocity =     ZERO_VECTOR;
         this.acceleration = ZERO_VECTOR;
@@ -118,18 +119,6 @@ class MovingEntity extends Entity
         // time dependant
         this.velocity = this.velocity.multiply(1 - DRAG).add(this.acceleration).setPrecision(2);
         this.acceleration = ZERO_VECTOR;
-    }
-}
-
-class Container extends Entity
-{
-    /**
-     * Container - A simple invisible entity that is only used as a parent
-     * @public
-     */
-    constructor()
-    {
-        super(0, 0, { width: 0, height: 0, color: "transparent" });
     }
 }
 

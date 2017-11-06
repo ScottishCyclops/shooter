@@ -1,3 +1,5 @@
+/// <reference path="../typings/pixi.js.d.ts" />
+
 // one meter is x pixels
 const meter = 64;
 const startTime = Date.now();

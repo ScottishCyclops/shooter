@@ -1,15 +1,9 @@
-class Entity
+/// <reference path="../typings/pixi.js.d.ts" />
+
+class Container
 {
-    /**
-     * Entity - Base class for anything that is physically present in the world
-     * @param {number} locX the x position in the world of the entity
-     * @param {number} locY the y position in the world of the entity
-     * @param {any} extras any extra parameters
-     * @public
-     */
-    constructor(locX, locY, extras)
+    constructor(locX, locY)
     {
-        extras = extras || {};
 
         /**
          * @property {Vector} location location of the entity in local space
@@ -18,104 +12,11 @@ class Entity
         this.location = new Vector(locX || 0, locY || 0);
 
         /**
-         * @property {number} rotation rotation of the entity in radians
-         * @readonly
-         */
-        this.rotation = extras.rotation || 0;
-
-        /**
-         * @property {Vector} scale scale of the entity
-         * @readonly
-         */
-        this.scale = new Vector(extras.scaleX || 1, extras.scaleY || 1);
-
-        /**
-         * @property {number} width width of the entity
-         * @readonly
-         */
-        this.width = extras.width || meter;
-
-        /**
-         * @property {number} height height of the entity
-         * @readonly
-         */
-        this.height = extras.height || meter;
-
-        /**
-         * @property {boolean} hidden visibility flag
-         * @readonly
-         */
-        this.hidden = extras.hidden || false;
-
-        /**
-         * @property {boolean} useCollisions collision participation flag
-         * @readonly
-         */
-        this.useCollisions = extras.useCollisions || false;
-
-        /**
-         * @property {number} depth layer of the entity
-         * @readonly
-         */
-        this.depth = extras.depth || 0;
-
-        /**
-         * @property {any} color color of the entity in a valid CSS representation
-         * @readonly
-         */
-        this.color = extras.color || 0;
-
-        /**
-         * @property {string} sprite the path to the image sprite to use
-         * @readonly
-         */
-        this.sprite = extras.sprite || "";
-
-        /**
-         * @property {string} spriteSize the CSS sizing of the background image
-         * @readonly
-         */
-        this.spriteSize = extras.spriteSize || "cover";
-
-        /**
          * @property {Entity[]} children this entity's children
          * @readonly
          */
         this.children = [];
-
-        /**
-         * @property {PIXI.Sprite} _pixi the underlying PIXI sprite object
-         * @private
-         */
-        this._pixi = new PIXI.Sprite(this.sprite.texture);
-
-        this._currentAction = undefined;
-        this._actions = {};
-        this._actionQueue = [];
-
-        /**
-         * @property {boolean} pauseAction should the action be paused
-         * @public
-         */
-        this.pauseAction = false;
-
-        this.registered = false;
-
-        this._updateTransform();
-        this._updateWidth();
-        this._updateHeight();
-        this._updateHidden();
-        this._updateSprite();
-
-        // auto registering
-        if(extras.register || extras.useCollisions)
-        {
-            registerObject(this);
-            this.registered = true;
-        }
     }
-
-    // Transform methods
 
     /**
      * Moves the entity to the specified location
@@ -133,8 +34,6 @@ class Entity
         const diff = this.location.subtract(newLocaction);
         this.location = newLocaction;
 
-        this._updateTransform();
-
         this._updateChildrenLocation(diff);
 
         // chainable
@@ -151,10 +50,195 @@ class Entity
     moveBy(vec, y)
     {
         this.location = this.location.add(vec, y);
-        this._updateTransform();
 
         const diff = Vector.prototype.fromVecY(vec, y);
         this._updateChildrenLocation(diff);
+
+        return this;
+    }
+
+    /**
+     * Adds a child to this entity
+     * @param {Entity} child the child to add
+     * @return {Entity} itself to be chainable
+     * @public
+     */
+    appendChild(child)
+    {
+        const index = this.children.indexOf(child);
+        if(index !== -1)
+        {
+            return;
+        }
+
+        this.children.push(child);
+        return this;
+    }
+
+    /**
+     * Removes a child from this entity
+     * @param {Entity} child the child to remove
+     * @return {Entity} itself to be chainable
+     * @public
+     */
+    removeChild(child)
+    {
+        const index = this.children.indexOf(child);
+        if(index === -1)
+        {
+            return;
+        }
+
+        this.children.splice(index, 1);
+        return this;
+    }
+
+    /**
+     * Updates all children's location recursively
+     * @param {Vector} vec distance to move all the children by
+     * @protected
+     */
+    _updateChildrenLocation(vec)
+    {
+        this.children.forEach(child =>
+        {
+            child.moveBy(vec);
+        });
+    }
+}
+
+class Entity extends Container
+{
+    /**
+     * Entity - Base class for anything that is physically present in the world
+     * @param {number} locX the x position in the world of the entity
+     * @param {number} locY the y position in the world of the entity
+     * @param {PIXI.loaders.Resource} image the image ressource
+     * @param {any} extras any extra parameters
+     * @public
+     */
+    constructor(locX, locY, image, extras)
+    {
+        extras = extras || {};
+
+        super(locX, locY);
+
+        /**
+         * @property {PIXI.loaders.Resource} image the sprite ressouce
+         * @readonly
+         */
+        this.image = image;
+
+        /**
+         * @property {PIXI.Sprite} sprite the underlying PIXI sprite object
+         * @public
+         */
+        this.sprite = new PIXI.Sprite(this.image.texture);
+
+        /**
+         * @property {number} rotation rotation of the entity in radians
+         * @readonly
+         */
+        this.rotation = extras.rotation || 0;
+
+        /**
+         * @property {Vector} scale scale of the entity
+         * @readonly
+         */
+        if(extras.scale)
+        {
+            this.scale = new Vector(extras.scale, extras.scale);
+        }
+        else
+        {
+            this.scale = new Vector(extras.scaleX || 1, extras.scaleY || 1);
+        }
+
+        /**
+         * @property {number} width width of the entity
+         * @readonly
+         */
+        this.width = extras.width || this.sprite.width;
+
+        /**
+         * @property {number} height height of the entity
+         * @readonly
+         */
+        this.height = extras.height || this.sprite.height;
+
+        /**
+         * @property {boolean} hidden visibility flag
+         * @readonly
+         */
+        this.hidden = extras.hidden || false;
+
+        /**
+         * @property {boolean} useCollisions collision participation flag
+         * @readonly
+         */
+        this.useCollisions = extras.useCollisions || false;
+
+
+        this._currentAction = undefined;
+        this._actions = {};
+        this._actionQueue = [];
+
+        /**
+         * @property {boolean} pauseAction should the action be paused
+         * @public
+         */
+        this.pauseAction = false;
+
+        this.registered = false;
+
+        this._updateWidth();
+        this._updateHeight();
+        this._updateLocation();
+        this._updateRotation();
+        this._updateScale();
+        this._updateHidden();
+        this._updateTexture();
+
+        // auto registering
+        if(extras.register || extras.useCollisions)
+        {
+            registerObject(this);
+            this.registered = true;
+        }
+
+        canvas.addChild(this.sprite);
+    }
+
+    // Transform methods
+
+    /**
+     * Moves the entity to the specified location
+     * @param {Vector} vec the vector to set the location, or the x component
+     * @param {number} y the y compoenent, or undefined
+     * @return {Entity} itself to be chainable
+     * @public
+     */
+    moveTo(vec, y)
+    {
+        super.moveTo(vec, y);
+
+        this._updateLocation();
+
+        return this;
+    }
+
+    /**
+     * Moves the entity by specified amount
+     * @param {Vector} vec the vector to add to the location, or the x component
+     * @param {number} y the y compoenent, or undefined
+     * @return {Entity} itself to be chainable
+     * @public
+     */
+    moveBy(vec, y)
+    {
+        super.moveBy(vec, y);
+
+        this._updateLocation();
 
         return this;
     }
@@ -168,7 +252,7 @@ class Entity
     rotateTo(angle)
     {
         this.rotation = angle % TWO_PI;
-        this._updateTransform();
+        this._updateRotation();
         return this;
     }
 
@@ -181,7 +265,7 @@ class Entity
     rotateBy(angle)
     {
         this.rotation = (this.rotation + angle) % TWO_PI;
-        this._updateTransform();
+        this._updateRotation();
         return this;
     }
 
@@ -195,7 +279,7 @@ class Entity
     scaleTo(vec, y)
     {
         this.scale = Vector.prototype.fromVecY(vec, y);
-        this._updateTransform();
+        this._updateScale();
         return this;
     }
 
@@ -209,7 +293,7 @@ class Entity
     scaleBy(vec, y)
     {
         this.scale = this.scale.multiply(vec, y);
-        this._updateTransform();
+        this._updateScale();
         return this;
     }
 
@@ -278,14 +362,14 @@ class Entity
 
     /**
      * Sets the background image of the entity
-     * @param {any} sprite the loaded ressource sprite
+     * @param {PIXI.loaders.Resource} image the loaded ressource sprite
      * @return {Entity} itself to be chainable
      * @public
      */
-    setSprite(sprite)
+    setImage(image)
     {
-        this.sprite = sprite;
-        this._updateSprite();
+        this.image = image;
+        this._updateTexture();
         return this;
     }
 
@@ -444,87 +528,44 @@ class Entity
 
     // CSS update methods
 
-    _updateTransform()
+    _updateLocation()
     {
-        this._pixi.setTransform(this.location.x, this.location.y, this.scale.x, this.scale.y, this.rotation);
+        this.sprite.position.x = this.location.x;
+        this.sprite.position.y = this.location.y;
+    }
+
+    _updateRotation()
+    {
+        this.sprite.rotation = this.rotation;
+    }
+
+    _updateScale()
+    {
+        this.sprite.scale.x = this.scale.x;
+        this.sprite.scale.y = this.scale.y;
     }
 
     _updateWidth()
     {
-        this._pixi.width = this.width;
+        this.sprite.width = this.width;
     }
 
     _updateHeight()
     {
-        this._pixi.height = this.height;
+        this.sprite.height = this.height;
     }
 
     _updateHidden()
     {
-        this._pixi.visible = !this.hidden;
+        this.sprite.visible = !this.hidden;
     }
 
-    _updateSprite()
+    _updateTexture()
     {
-        this._pixi.texture = this.sprite.texture;
+        this.sprite.texture = this.image.texture;
     }
 
     // Utilities
-
-    /**
-     * Adds a child to this entity
-     * @param {Entity} child the child to add
-     * @return {Entity} itself to be chainable
-     * @public
-     */
-    appendChild(child)
-    {
-        const index = this.children.indexOf(child);
-        if(index !== -1)
-        {
-            return;
-        }
-
-        this.children.push(child);
-        // add to the dom
-        canvas._html.appendChild(child._html);
-
-        // TODO: fix why it is needed
-        // child.moveBy(ZERO_VECTOR);
-        return this;
-    }
-
-    /**
-     * Removes a child from this entity
-     * @param {Entity} child the child to remove
-     * @return {Entity} itself to be chainable
-     * @public
-     */
-    removeChild(child)
-    {
-        const index = this.children.indexOf(child);
-        if(index === -1)
-        {
-            return;
-        }
-
-        this.children.splice(index, 1);
-        this._html.removeChild(child._html);
-        return this;
-    }
-
-    /**
-     * Updates all children's location recursively
-     * @param {Vector} vec distance to move all the children by
-     * @protected
-     */
-    _updateChildrenLocation(vec)
-    {
-        this.children.forEach(child =>
-        {
-            child.moveBy(vec);
-        });
-    }
 
     /**
     * Ges the distance from another entity
