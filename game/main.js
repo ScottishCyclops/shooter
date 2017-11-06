@@ -62,7 +62,7 @@ function setup()
             JUMP:  " "
         },
         color: "#0005",
-        walkingSpeed: 0.6
+        walkingSpeed: 0.7
     });
 
 
@@ -74,7 +74,7 @@ function setup()
         new Action("res/anims/spaceguy/fly",   1, {delay: 1, iterations: -1})
     );
 
-    player.pauseAction = true;
+    // player.pauseAction = true;
 
     player.playAction("fly");
 

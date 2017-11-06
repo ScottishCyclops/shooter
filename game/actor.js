@@ -81,7 +81,7 @@ class Actor extends MovingEntity
                 this.queueAction("still");
 
                 // slow down when player stops moving
-                this.velocity = this.velocity.divide(deltaTime / 2);
+                this.velocity = this.velocity.divideX(deltaTime / 2);
             }
         }
 
@@ -122,11 +122,11 @@ class Actor extends MovingEntity
             // force ratio goes from 1 to 0.5
             // as you spend more time holding jump
             // until you jumped for `maxJumpPressingTime`
-            // const forceRatio = this.jumpPressingTime / this.maxJumpPressingTime / 2 + 0.5;
-            const forceRatio = (1 - this.jumpPressingTime / this.maxJumpPressingTime) / 4;
+            const forceRatio = this.jumpPressingTime / this.maxJumpPressingTime / 2 + 0.5;
+            // const forceRatio = (1 - this.jumpPressingTime / this.maxJumpPressingTime) / 4;
 
             // this.acceleration = this.acceleration.addY(-GRAVITY * deltaTime * forceRatio);
-            this.acceleration = this.acceleration.maxY(forceRatio);
+            this.acceleration = this.acceleration.subtractY(this.jumpForce * deltaTime / 30 * forceRatio);
             this.jumpPressingTime -= deltaTime;
         }
 
