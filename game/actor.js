@@ -51,10 +51,18 @@ class Actor extends MovingEntity
         const isDownJump = isDown(this.inputs.JUMP);
 
         // check if we need to stop jumping
-        if(!isDownJump || this.jumpPressingTime <= 0 || this.top || this.bottom)
+        if(!isDownJump || this.jumpPressingTime <= 0 || this.top || (this.bottom && !this.wasBottom))
         {
             this.jumping = false;
             this.jumpPressingTime = this.maxJumpPressingTime;
+            console.log("stop jumping");
+        }
+
+        if(this.jumping && this.bottom)
+        {
+            /// modify the bottom. it is possible that for one frame we are
+            // still in collision with bottom, but we are jumping
+            this.bottom = false;
         }
 
         // if we are moving in a direction
@@ -65,13 +73,15 @@ class Actor extends MovingEntity
                 this.queueAction("walk");
             }
 
+            const speed = this.walkingSpeed * deltaTime;
+
             if(currentDirections.HORIZONTAL === directions.LEFT)
             {
-                this.acceleration = this.acceleration.addX(-this.walkingSpeed * deltaTime);
+                this.acceleration = this.acceleration.subtractX(speed);
             }
             else
             {
-                this.acceleration = this.acceleration.addX(this.walkingSpeed * deltaTime);
+                this.acceleration = this.acceleration.addX(speed);
             }
         }
         else
@@ -81,7 +91,10 @@ class Actor extends MovingEntity
                 this.queueAction("still");
 
                 // slow down when player stops moving
-                this.velocity = this.velocity.divideX(deltaTime / 2);
+                if(this.velocity.x !== 0)
+                {
+                    this.velocity = this.velocity.divideX(deltaTime / 2);
+                }
             }
         }
 
@@ -91,7 +104,7 @@ class Actor extends MovingEntity
             if(isDownJump && !this.jumping)
             {
                 this.jumping = true;
-                this.acceleration = this.acceleration.addY(-this.jumpForce);
+                this.acceleration = this.acceleration.subtractY(this.jumpForce);
                 console.log("jumping");
 
                 this.playAction("jump").queueAction("fly");
@@ -99,7 +112,7 @@ class Actor extends MovingEntity
 
             if(!this.wasBottom)
             {
-                this.playAction("land").queueAction("still");
+                this.playAction("land");
             }
         }
         else
@@ -139,13 +152,15 @@ class Actor extends MovingEntity
                 // TODO: ladder animation
                 this.queueAction("fly");
 
+                const speed = this.climbingSpeed * deltaTime;
+
                 if(currentDirections.VERTICAL === directions.UP)
                 {
-                    this.acceleration = this.acceleration.addY(-this.climbingSpeed * deltaTime);
+                    this.acceleration = this.acceleration.subtractY(speed);
                 }
                 else
                 {
-                    this.acceleration = this.acceleration.addY(this.climbingSpeed * deltaTime);
+                    this.acceleration = this.acceleration.addY(speed);
                 }
             }
             else
