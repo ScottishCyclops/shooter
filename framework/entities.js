@@ -1,12 +1,3 @@
-const actorState =
-{
-    STILL: 0,
-    WALK: 1,
-    JUMP: 2,
-    LADDER_UP: 3,
-    LADDER_DOWN: 4
-};
-
 class MovingEntity extends Entity
 {
     /**

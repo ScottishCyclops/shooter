@@ -84,10 +84,10 @@ class Entity
         this.children = [];
 
         /**
-         * @property {any} _html html div element
+         * @property {PIXI.Sprite} _pixi the underlying PIXI sprite object
          * @private
          */
-        this._html = document.createElement("div");
+        this._pixi = new PIXI.Sprite(this.sprite.texture);
 
         this._currentAction = undefined;
         this._actions = {};
@@ -101,20 +101,11 @@ class Entity
 
         this.registered = false;
 
-        // html element basic styling
-        this._html.style.position = "absolute";
-        this._html.style.top = 0;
-        this._html.style.left = 0;
-        this._html.style.overflow = "initial";
-
         this._updateTransform();
         this._updateWidth();
         this._updateHeight();
         this._updateHidden();
-        this._updateDepth();
-        this._updateColor();
-        this._updateBackground();
-        this._updateBackgroundSize();
+        this._updateSprite();
 
         // auto registering
         if(extras.register || extras.useCollisions)
@@ -286,52 +277,15 @@ class Entity
     }
 
     /**
-     * Sets the depth / layer of the entity
-     * @param {number} depth the depth or layer of the entity
-     * @return {Entity} itself to be chainable
-     * @public
-     */
-    setDepth(depth)
-    {
-        this.depth = depth;
-        this._updateDepth();
-        return this;
-    }
-
-    /**
-     * Sets the fill color of the entity
-     * @param {string} color a valid CSS color representation
-     * @return {Entity} itself to be chainable
-     * @public
-     */
-    setColor(color)
-    {
-        this.color = color;
-        this._updateColor();
-        return this;
-    }
-
-    /**
      * Sets the background image of the entity
-     * @param {string} sprite the path to the image
+     * @param {any} sprite the loaded ressource sprite
      * @return {Entity} itself to be chainable
      * @public
      */
     setSprite(sprite)
     {
         this.sprite = sprite;
-        this._updateBackground();
-        return this;
-    }
-
-    /**
-     * Sets the CSS sizing of the sprite. default: cover
-     * @param {string} size a valid CSS representation of the size
-     */
-    setSpriteSize(size)
-    {
-        this.spriteSize = size;
-        this._updateBackgroundSize();
+        this._updateSprite();
         return this;
     }
 
@@ -492,43 +446,27 @@ class Entity
 
     _updateTransform()
     {
-        // auto offset to center of div when drawing
-        this._html.style.transform = `translate${this.location.toCssString(PX)} scale${this.scale.toCssString()} rotate(${this.rotation}rad)`;
+        this._pixi.setTransform(this.location.x, this.location.y, this.scale.x, this.scale.y, this.rotation);
     }
 
     _updateWidth()
     {
-        this._html.style.width =  this.width + PX;
+        this._pixi.width = this.width;
     }
 
     _updateHeight()
     {
-        this._html.style.height = this.height + PX;
+        this._pixi.height = this.height;
     }
 
     _updateHidden()
     {
-        this._html.style.display = this.hidden ? "none" : "block";
+        this._pixi.visible = !this.hidden;
     }
 
-    _updateDepth()
+    _updateSprite()
     {
-        this._html.style.zIndex = this.depth;
-    }
-
-    _updateColor()
-    {
-        this._html.style.backgroundColor = this.color;
-    }
-
-    _updateBackground()
-    {
-        this._html.style.backgroundImage = `url(${this.sprite})`;
-    }
-
-    _updateBackgroundSize()
-    {
-        this._html.style.backgroundSize = this.spriteSize;
+        this._pixi.texture = this.sprite.texture;
     }
 
     // Utilities

@@ -7,9 +7,9 @@ let loopHandle = undefined;
 let loopFunction = undefined;
 let looping = false;
 let mousePos = ZERO_VECTOR;
+let renderer = null;
 let canvas = null;
 let timeDivider = 1;
-let dummyElement = null;
 let delay = 0;
 
 const UP_VECTOR = new Vector(0, -1);
@@ -24,44 +24,25 @@ const keysDown = [];
 const entities = [];
 const objects = [];
 
+// PIXI aliases
+const res = PIXI.loader.resources;
+
 window.onload = () =>
 {
-    canvas = new Canvas(innerWidth, innerHeight);
-    dummyElement = document.createElement("div");
-    dummyElement.style.width = 0;
-    dummyElement.style.height = 0;
-    dummyElement.style.overflow = "hidden";
-    document.body.appendChild(dummyElement);
+    renderer = PIXI.autoDetectRenderer(innerWidth, innerHeight);
+    renderer.view.style.position = "absolute";
+    renderer.view.style.display = "block";
+    renderer.autoResize = true;
 
-    let lastTime = 0;
+    document.body.appendChild(renderer.view);
 
-    loopFunction = () =>
-    {
-        const now = millis();
-        const delta = (now - lastTime) / timeDivider;
-        lastTime = now;
+    // object containing everything to render
+    canvas = new PIXI.Container;
 
-        entities.forEach(entity =>
-        {
-            entity.update(delta);
-        });
-
-        objects.forEach(object =>
-        {
-            object.update(delta);
-        });
-
-        if(typeof loop === "function")
-        {
-            loop(delta);
-        }
-    };
-
-    // user setup
-    if(typeof setup === "function")
-    {
-        setup();
-    }
+    PIXI.loader
+        .add(toLoad || [])
+        .on("progress", loadProgressHandler)
+        .load(load);
 
     // Events
 
@@ -139,11 +120,66 @@ window.onload = () =>
             return mouseMoveEvent(e);
         }
     }
+};
 
-    // start the loop
+function loadProgressHandler(loader, resource)
+{
+    console.log("loading: " + resource.url);
+    console.log("progress: " + loader.progress + "%");
+}
+
+function load()
+{
+    let lastTime = 0;
+
+    loopFunction = () =>
+    {
+        const now = millis();
+        const delta = (now - lastTime) / timeDivider;
+        lastTime = now;
+
+        // TODO: clean up the double list
+        entities.forEach(entity =>
+        {
+            entity.update(delta);
+        });
+
+        objects.forEach(object =>
+        {
+            object.update(delta);
+        });
+
+        if(typeof loop === "function")
+        {
+            loop(delta);
+        }
+    };
+
+    // user setup
+    if(typeof setup === "function")
+    {
+        setup();
+    }
+
+    // start the update loop
     loopHandle = setInterval(loopFunction, delay);
     looping = true;
-};
+
+    function update()
+    {
+        renderer.render(canvas);
+
+        if(!looping)
+        {
+            return;
+        }
+
+        requestAnimationFrame(update);
+    }
+
+    // start the draw loop
+    requestAnimationFrame(update);
+}
 
 // Helpers
 
@@ -179,6 +215,8 @@ function play()
 
     loopHandle = setInterval(loopFunction, delay);
     looping = true;
+
+    requestAnimationFrame(update);
 }
 
 /**
