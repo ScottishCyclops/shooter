@@ -1,7 +1,5 @@
 /// <reference path="../typings/pixi.js.d.ts" />
 
-// one meter is x pixels
-const meter = 64;
 const startTime = Date.now();
 let pauseStartTime = 0;
 let totalPauseTime = 0;
@@ -167,20 +165,20 @@ function load()
     loopHandle = setInterval(loopFunction, delay);
     looping = true;
 
-    function update()
+    // start the draw loop
+    requestAnimationFrame(draw);
+}
+
+function draw()
+{
+    renderer.render(canvas);
+
+    if(!looping)
     {
-        renderer.render(canvas);
-
-        if(!looping)
-        {
-            return;
-        }
-
-        requestAnimationFrame(update);
+        return;
     }
 
-    // start the draw loop
-    requestAnimationFrame(update);
+    requestAnimationFrame(draw);
 }
 
 // Helpers
@@ -218,7 +216,7 @@ function play()
     loopHandle = setInterval(loopFunction, delay);
     looping = true;
 
-    requestAnimationFrame(update);
+    requestAnimationFrame(draw);
 }
 
 /**

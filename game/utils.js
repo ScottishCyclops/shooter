@@ -8,17 +8,18 @@ function parseLevel(data)
 
     rawData.entities.forEach(entity =>
     {
-        world.appendChild(new Entity(entity.locX, entity.locY, entity.extras));
+        world.appendChild(new Entity(entity.locX, entity.locY, res["black"], entity.extras));
     });
-
+    /*
     rawData.backgrounds.forEach(background =>
     {
         world.appendChild(new Background(background.locX, background.locY, background.extras));
     });
+    */
 
     rawData.ladders.forEach(ladder =>
     {
-        const entity = new Entity(ladder.locX, ladder.locY, ladder.extras);
+        const entity = new Entity(ladder.locX, ladder.locY, res["black"], ladder.extras);
         ladders.push(entity);
         world.appendChild(entity);
     });

@@ -2,15 +2,15 @@ class Action
 {
     /**
      * Creates a new action
-     * @param {string} path folder in which the frames are
+     * @param {string} basename basename of all the frames to use
      * @param {number} numFrames number of frames to use
      * @param {any} extras any extra parameters
      */
-    constructor(path, numFrames, extras)
+    constructor(basename, numFrames, extras)
     {
         extras = extras || {};
 
-        this.path = path;
+        this.basename = basename;
         this.numFrames = numFrames;
 
         /**
@@ -42,13 +42,11 @@ class Action
          * @property {string} name the name of the action
          * @readonly
          */
-        this.name = extras.name || path.split("/").pop();
+        this.name = extras.name || basename;
 
         this._totalTime = this.numFrames * this.delay;
         this._passedTime = 0;
         this._passedIterations = 0;
-
-        this._preload();
     }
 
     /**
@@ -67,7 +65,7 @@ class Action
         const frame = Math.floor(this._passedTime / this.delay);
 
         // TODO: if alternate and reverse, we need to ignore redondant frames
-        entity.setSprite(`${this.path}/${this.reverse ? this.numFrames - 1 - frame : frame}.png`);
+        entity.setImage(res[this.basename + (this.reverse ? this.numFrames - 1 - frame : frame)]);
 
         this._passedTime += deltaTime;
 
@@ -118,7 +116,7 @@ class Action
         settings.alternate = settings.alternate || this.alternate;
         settings.name = this.name;
 
-        return new Action(this.path, this.numFrames, settings);
+        return new Action(this.basename, this.numFrames, settings);
     }
 
     /**
@@ -141,20 +139,5 @@ class Action
     isInfinite()
     {
         return this.iterations === -1;
-    }
-
-    /**
-     * Preload all the frames by applying them to an element a first time
-     * @private
-     */
-    _preload()
-    {
-        let images = "";
-        for(let i = 0; i < this.numFrames; i++)
-        {
-            images += `url(${this.path}/${i}.png) `;
-        }
-
-        dummyElement.style.content += images;
     }
 }

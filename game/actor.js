@@ -4,12 +4,13 @@ class Actor extends MovingEntity
     * Actor - Class of the main character
     * @param {number} locX the x position in the world of the entity
     * @param {number} locY the y position in the world of the entity
+    * @param {PIXI.loaders.Resource} image the image ressource
     * @param {any} extras any extra parameters
     * @public
     */
-    constructor(locX, locY, extras)
+    constructor(locX, locY, image, extras)
     {
-        super(locX, locY, extras);
+        super(locX, locY, image, extras);
         extras = extras || {};
 
         // TODO: fix default parameters
@@ -55,7 +56,7 @@ class Actor extends MovingEntity
         {
             this.jumping = false;
             this.jumpPressingTime = this.maxJumpPressingTime;
-            console.log("stop jumping");
+            // console.log("stop jumping");
         }
 
         if(this.jumping && this.bottom)

@@ -122,21 +122,6 @@ class MovingEntity extends Entity
     }
 }
 
-class Canvas extends Entity
-{
-    /**
-     * Canvas - The parent entity of the game
-     * @param {number} width the width of the canvas
-     * @param {number} height the height of the canvas
-     * @public
-     */
-    constructor(width, height)
-    {
-        super(0, 0, { width: width, height: height, depth: -999 });
-
-        document.body.appendChild(this._html);
-    }
-}
 
 class TextEntity extends Entity
 {
@@ -147,14 +132,14 @@ class TextEntity extends Entity
      * @param {any} extras any extra parameters
      * @public
      */
-    constructor(locX, locY, extras)
+    constructor(locX, locY, image, extras)
     {
         extras = extras || {};
 
         // change default width for text to avoid line feeds
         extras.width = extras.width || 900;
 
-        super(locX, locY, extras);
+        super(locX, locY, image, extras);
 
         this.text = extras.text || "";
         this.bold = extras.bold || false;
@@ -245,12 +230,13 @@ class Background extends Entity
      * Background - A background entity that moves slower to simulate distance
      * @param {number} locX the x position in the world of the entity
      * @param {number} locY the y position in the world of the entity
+     * @param {PIXI.loaders.Resource} image the image ressource
      * @param {any} extras any extra parameters
      * @public
      */
-    constructor(locX, locY, extras)
+    constructor(locX, locY, image, extras)
     {
-        super(locX, locY, extras);
+        super(locX, locY, image, extras);
 
         extras = extras || {};
 

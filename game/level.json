@@ -6,8 +6,8 @@
             "locY": 2000,
             "extras":
             {
-                "width": 4000,
-                "height": 400,
+                "scaleX": 4000,
+                "scaleY": 400,
                 "color": "#333",
                 "useCollisions": true
             }
@@ -17,8 +17,8 @@
             "locY": 1800,
             "extras":
             {
-                "width": 4000,
-                "height": 200,
+                "scaleX": 4000,
+                "scaleY": 200,
                 "color": "#666",
                 "useCollisions": true
             }
@@ -28,8 +28,8 @@
             "locY": 1500,
             "extras":
             {
-                "width": 3000,
-                "height": 300,
+                "scaleX": 3000,
+                "scaleY": 300,
                 "color": "#888",
                 "useCollisions": true
             }
@@ -39,8 +39,8 @@
             "locY": 1500,
             "extras":
             {
-                "width": 500,
-                "height": 300,
+                "scaleX": 500,
+                "scaleY": 300,
                 "color": "#888",
                 "useCollisions": true
             }
@@ -50,8 +50,8 @@
             "locY": 1500,
             "extras":
             {
-                "width": 500,
-                "height": 32,
+                "scaleX": 500,
+                "scaleY": 32,
                 "color": "#888",
                 "useCollisions": true
             }
@@ -61,8 +61,8 @@
             "locY": 1300,
             "extras":
             {
-                "width": 2000,
-                "height": 200,
+                "scaleX": 2000,
+                "scaleY": 200,
                 "color": "#555",
                 "useCollisions": true
             }
@@ -75,8 +75,8 @@
             "locY": 1500,
             "extras":
             {
-                "width": 80,
-                "height": 300,
+                "scaleX": 80,
+                "scaleY": 300,
                 "depth": -1,
                 "sprite": "res/ladder.png",
                 "spriteSize": "100%"
@@ -90,8 +90,8 @@
             "locY": -200,
             "extras":
             {
-                "width": 3000,
-                "height": 2000,
+                "scaleX": 3000,
+                "scaleY": 2000,
                 "sprite": "res/background1.png",
                 "distanceDivider": 2,
                 "depth": -1

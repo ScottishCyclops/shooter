@@ -131,9 +131,15 @@ class Entity extends Container
 
         /**
          * @property {PIXI.Sprite} sprite the underlying PIXI sprite object
-         * @public
+         * @readonly
          */
         this.sprite = new PIXI.Sprite(this.image.texture);
+
+        /**
+         * @property {Vector} anchor the anchor point from which to transform
+         * @readonly
+         */
+        this.anchor = new Vector(extras.anchorX || 0, extras.anchorY || 0);
 
         /**
          * @property {number} rotation rotation of the entity in radians
@@ -153,6 +159,8 @@ class Entity extends Container
         {
             this.scale = new Vector(extras.scaleX || 1, extras.scaleY || 1);
         }
+
+        this._updateScale();
 
         /**
          * @property {number} width width of the entity
@@ -191,11 +199,11 @@ class Entity extends Container
 
         this.registered = false;
 
+        this._updateAnchor();
         this._updateWidth();
         this._updateHeight();
         this._updateLocation();
         this._updateRotation();
-        this._updateScale();
         this._updateHidden();
         this._updateTexture();
 
@@ -373,6 +381,13 @@ class Entity extends Container
         return this;
     }
 
+    setAnchor(vec, y)
+    {
+        this.anchor = Vector.prototype.fromVecY(vec, y);
+
+        this._updateAnchor();
+    }
+
     /**
      * Plays an action. flushes the current action queue
      * @param {string} name the unique name of the action
@@ -477,30 +492,6 @@ class Entity extends Container
     // Events
 
     /**
-     * Sets a callback when left clicking on the entity
-     * @param {Function} callback the function to call back on left click
-     * @return {Entity} itself to be chainable
-     * @public
-     */
-    onLeftClick(callback)
-    {
-        this._html.onclick = callback;
-        return this;
-    }
-
-    /**
-     * Sets a callback when right clicking on the entity
-     * @param {Function} callback the function to call back on right click
-     * @return {Entity} itself to be chainable
-     * @public
-     */
-    onRightClick(callback)
-    {
-        this._html.oncontextmenu = callback;
-        return this;
-    }
-
-    /**
      * Updates the entity
      * @param {number} deltaTime time passed since the last frame in ms
      * @public
@@ -526,7 +517,13 @@ class Entity extends Container
         }
     }
 
-    // CSS update methods
+    // PIXI update methods
+
+    _updateAnchor()
+    {
+        this.sprite.anchor.x = this.anchor.x;
+        this.sprite.anchor.y = this.anchor.y;
+    }
 
     _updateLocation()
     {
@@ -563,6 +560,8 @@ class Entity extends Container
     _updateTexture()
     {
         this.sprite.texture = this.image.texture;
+        // TODO: don't change the texture size
+        this._updateScale();
     }
 
     // Utilities
